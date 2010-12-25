@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import re
 import sys
+from os import EX_OK
 
 checks = (
     {
@@ -43,4 +44,4 @@ for system in checks:
     for test in system['tests']:
         check(test[0], test[1], test[2], content)
 
-sys.exit(1)
+sys.exit(EX_OK)
