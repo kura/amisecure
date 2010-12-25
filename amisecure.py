@@ -21,6 +21,19 @@ def check(regex, match_is_secure, message, content):
             secure = False
     write_to_shell(message, rx.search(content).group(1), secure)
 
+checks = {
+    "ssh": {
+        "file": "/etc/ssh/sshd_config",
+        "tests": (
+            ("PermitRootLogin+\s+(yes)", False, "Permit root logins"),
+            ("UsePrivilegeSeparation+\s+yes", True, "Use privilege separation"),
+            ("StrictModes+\s+yes", True, "Use strict modes"),
+            ("PermitEmptyPasswords+\s+yes", False, "Permit empty passwords"),
+        ),
+    },
+}
+
+
 class ssh(object):
     u"""SSH security class"""
 
