@@ -3,7 +3,7 @@ import re
 import sys
 import os
 
-checks = (
+config_checks = (
     {
         "name": "ssh",
         "file": "/etc/ssh/sshd_config",
@@ -16,32 +16,38 @@ checks = (
     },
 )
 
-def write_to_shell(message, value, status):
+def write_to_shell(message, value, colour):
     u"""Output response to shell"""
-    if status:
+    if colour == "green":
         colour = "\x1b[01;32m"
-        value = value + " (secure)"
-    else:
+    elif colour == "red":
         colour = "\x1b[01;31m"
-        value = value + " (not secure)"
+    else:
+        colour = "\x1b[01;33m"
     sys.stdout.write("- %s ... " % (message))
     sys.stdout.write(colour + value.upper() + "\x1b[00m" + "\n")
 
-def check(regex, secure_value, message, content):
+def check_config_value(regex, secure_value, message, content):
     u"""Test method for doing entire check without code replication"""
     rx = re.compile(regex)
     if rx.search(content):
         value = rx.search(content).group(1)
         if secure_value == value:
-            secure = True
+            colour = "green"
+            value = value + " (secure)"
         else:
-            secure = False
-    write_to_shell(message, value, secure)
+            colour = "red"
+            value = value + " (not secure)"
+    else:
+        colour = "yellow"
+        value = "unknown"
+        
+    write_to_shell(message, value, colour)
 
-for system in checks:
+for system in config_checks:
     sys.stdout.write("Checking: %s\n" % (system['name']))
     content = open(system['file'], "r").read()
     for test in system['tests']:
-        check(test[0], test[1], test[2], content)
+        check_config_value(test[0], test[1], test[2], content)
 
 sys.exit(os.EX_OK)
