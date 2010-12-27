@@ -8,10 +8,10 @@ config_checks = (
         "name": "ssh",
         "file": "/etc/ssh/sshd_config",
         "tests": (
-            ("PermitRootLogin+\s+(yes|no)", "no", "Permit root logins"),
-            ("UsePrivilegeSeparation+\s+(yes|no)", "yes", "Use privilege separation"),
-            ("StrictModes+\s+(yes|no)", "yes", "Use strict modes"),
-            ("PermitEmptyPasswords+\s+(yes|no)", "no", "Permit empty passwords"),
+            (r"PermitRootLogin+\s+(?P<value>yes|no)", "no", "Permit root logins"),
+            (r"UsePrivilegeSeparation+\s+(?P<value>yes|no)", "yes", "Use privilege separation"),
+            (r"StrictModes+\s+(?P<value>yes|no)", "yes", "Use strict modes"),
+            (r"PermitEmptyPasswords+\s+(?P<value>yes|no)", "no", "Permit empty passwords"),
         ),
     },
 )
@@ -31,7 +31,7 @@ def check_config_value(regex, secure_value, message, content):
     u"""Test method for doing entire check without code replication"""
     rx = re.compile(regex)
     if rx.search(content):
-        value = rx.search(content).group(1)
+        value = rx.search(content).group('value')
         if secure_value == value:
             colour = "green"
             value = value + " (secure)"
@@ -47,7 +47,7 @@ def check_config_value(regex, secure_value, message, content):
 for system in config_checks:
     sys.stdout.write("Checking: %s\n" % (system['name']))
     content = open(system['file'], "r").read()
-    for test in system['tests']:
-        check_config_value(test[0], test[1], test[2], content)
+    for (regex, secure_value, message) in system['tests']:
+        check_config_value(regex, secure_value, message, content)
 
 sys.exit(os.EX_OK)
