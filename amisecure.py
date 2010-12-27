@@ -8,10 +8,10 @@ config_checks = (
         "name": "ssh",
         "file": "/etc/ssh/sshd_config",
         "tests": (
-            (r"PermitRootLogin+\s+(?P<value>yes|no)", "no", "Permit root logins"),
-            (r"UsePrivilegeSeparation+\s+(?P<value>yes|no)", "yes", "Use privilege separation"),
-            (r"StrictModes+\s+(?P<value>yes|no)", "yes", "Use strict modes"),
-            (r"PermitEmptyPasswords+\s+(?P<value>yes|no)", "no", "Permit empty passwords"),
+            (re.compile(r"PermitRootLogin+\s+(?P<value>yes|no)"), "no", "Permit root logins"),
+            (re.compile(r"UsePrivilegeSeparation+\s+(?P<value>yes|no)"), "yes", "Use privilege separation"),
+            (re.compile(r"StrictModes+\s+(?P<value>yes|no)"), "yes", "Use strict modes"),
+            (re.compile(r"PermitEmptyPasswords+\s+(?P<value>yes|no)"), "no", "Permit empty passwords"),
         ),
     },
 )
@@ -29,9 +29,8 @@ def write_to_shell(message, value, colour):
 
 def check_config_value(regex, secure_value, message, content):
     u"""Test method for doing entire check without code replication"""
-    rx = re.compile(regex)
-    if rx.search(content):
-        value = rx.search(content).group('value')
+    if regex.search(content):
+        value = regex.search(content).group('value')
         if secure_value == value:
             colour = "green"
             value = value + " (secure)"
