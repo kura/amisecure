@@ -16,6 +16,17 @@ config_checks = (
             (re.compile(r"PermitEmptyPasswords+\s+(?P<value>yes|no)"), "no", "Permit empty passwords"),
         ),
     },
+    {
+        "name": "apache",
+        "files": (
+            "/etc/apache2/httpd.conf",
+            "/etc/apache2/ports.conf",
+            "/etc/apache2/apache2.conf",
+            "/etc/apache2/conf.d/*",
+        ),
+        "tests": (
+        ),
+    },
 )
 
 def write_to_shell(message, value, colour):
@@ -49,7 +60,11 @@ for system in config_checks:
     sys.stdout.write("Checking: %s\n" % (system['name']))
     content = ""
     for file in system['files']:
-        if os.path.exists(file):
+        if re.search(r"\*$", file):
+            (path, asterix) = os.path.split(file)
+            for extra_file in os.listdir(path):
+                content = content + "\n" + open(extra_file, "r").read()
+        elif os.path.exists(file):
             content = content + "\n" + open(file, "r").read()
 
     for (regex, secure_value, message) in system['tests']:
