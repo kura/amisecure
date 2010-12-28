@@ -1,3 +1,10 @@
 - Multiple file support and hungry regex with -1 dict return should be good enough to handle more advanced configs like Apache + conf.d, possibly heavy on lots of regexs + files?
 
 - How to handle iptables? open() content file on filesystem? Possible, but slightly ugly when location is user controlled. Try to get from iptables -L?
+
+- System checks?
+- - sshd
+- - apache2 (timeout, tokens, indexes?, keepalive)
+- - nginx (tokens)
+- - iptables (unknown)
+- - php (sessions, expose, url_fopen)
