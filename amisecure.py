@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import re
 import sys
 import os
@@ -29,6 +29,11 @@ config_checks = (
     },
 )
 
+def is_root():
+    if os.geteuid() == 0:
+        return True
+    return False
+
 def write_to_shell(message, value, colour):
     u"""Output response to shell"""
     if colour == "green":
@@ -56,17 +61,25 @@ def check_config_value(regex, secure_value, message, content):
         
     write_to_shell(message, value, colour)
 
-for system in config_checks:
-    sys.stdout.write("Checking: %s\n" % (system['name']))
+def get_content(system):
     content = ""
     for file in system['files']:
         if re.search(r"\*$", file):
             (path, asterix) = os.path.split(file)
             for extra_file in os.listdir(path):
-                content = content + "\n" + open(extra_file, "r").read()
+                content = content + "\n" + open(os.path.join(path, extra_file), "r").read()
         elif os.path.exists(file):
             content = content + "\n" + open(file, "r").read()
+    return content
 
+if not is_root():
+    sys.stdout.write("Only root may run this command\n")
+    sys.exit(os.EX_NOUSER)
+    
+for system in config_checks:
+    sys.stdout.write("Checking: %s\n" % (system['name']))
+    content = get_content(system)
+    
     for (regex, secure_value, message) in system['tests']:
         check_config_value(regex, secure_value, message, content)
 
