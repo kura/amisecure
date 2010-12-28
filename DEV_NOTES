@@ -8,3 +8,5 @@
  + nginx (tokens)
  + iptables (unknown)
  + php (sessions, expose, url_fopen)
+
+ - How to trigger multiple open within dir? regex for *? Could be messy
