@@ -6,7 +6,9 @@ import os
 config_checks = (
     {
         "name": "ssh",
-        "file": "/etc/ssh/sshd_config",
+        "files": (
+            "/etc/ssh/sshd_config",
+        ),
         "tests": (
             (re.compile(r"PermitRootLogin+\s+(?P<value>yes|no)"), "no", "Permit root logins"),
             (re.compile(r"UsePrivilegeSeparation+\s+(?P<value>yes|no)"), "yes", "Use privilege separation"),
@@ -30,7 +32,7 @@ def write_to_shell(message, value, colour):
 def check_config_value(regex, secure_value, message, content):
     u"""Test method for doing entire check without code replication"""
     if regex.search(content):
-        value = regex.search(content).group('value')
+        value = regex.findall(content)[-1]
         if secure_value == value:
             colour = "green"
             value = value + " (secure)"
@@ -45,7 +47,11 @@ def check_config_value(regex, secure_value, message, content):
 
 for system in config_checks:
     sys.stdout.write("Checking: %s\n" % (system['name']))
-    content = open(system['file'], "r").read()
+    content = ""
+    for file in system['files']:
+        if os.path.exists(file):
+            content = content + "\n" + open(file, "r").read()
+
     for (regex, secure_value, message) in system['tests']:
         check_config_value(regex, secure_value, message, content)
 
