@@ -9,4 +9,5 @@
  + iptables (unknown)
  + php (sessions, expose, url_fopen)
 
- - How to trigger multiple open within dir? regex for *? Could be messy
+- How to trigger multiple open within dir? regex for *? Could be messy
+ + May have a possible solution to this. Added to code. Need to test
