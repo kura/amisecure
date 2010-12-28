@@ -1,0 +1,1 @@
+- Multiple file support and hungry regex with -1 dict return should be good enough to handle more advanced configs like Apache + conf.d, possibly heavy on lots of regexs + files?
