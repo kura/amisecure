@@ -10,10 +10,10 @@ config_checks = (
             "/etc/ssh/sshd_config",
         ),
         "tests": (
-            (re.compile(r"PermitRootLogin+\s+(?P<value>yes|no)"), "no", "Permit root logins"),
-            (re.compile(r"UsePrivilegeSeparation+\s+(?P<value>yes|no)"), "yes", "Use privilege separation"),
-            (re.compile(r"StrictModes+\s+(?P<value>yes|no)"), "yes", "Use strict modes"),
-            (re.compile(r"PermitEmptyPasswords+\s+(?P<value>yes|no)"), "no", "Permit empty passwords"),
+            (re.compile(r"PermitRootLogin+\s+(?P<value>yes|no)"), ("equal_to", "no"), "Permit root logins"),
+            (re.compile(r"UsePrivilegeSeparation+\s+(?P<value>yes|no)"), ("equal_to", "yes"), "Use privilege separation"),
+            (re.compile(r"StrictModes+\s+(?P<value>yes|no)"), ("equal_to", "yes"), "Use strict modes"),
+            (re.compile(r"PermitEmptyPasswords+\s+(?P<value>yes|no)"), ("equal_to", "no"), "Permit empty passwords"),
         ),
     },
     {
@@ -29,8 +29,24 @@ config_checks = (
     },
 )
 
+
 def is_root():
     if os.geteuid() == 0:
+        return True
+    return False
+
+def equal_to(this, that):
+    if str(this) == str(that):
+        return True
+    return False
+
+def greater_than(this, that):
+    if int(this) > int(that):
+        return True
+    return False
+
+def less_than(this, that):
+    if int(this) < int(that):
         return True
     return False
 
@@ -47,9 +63,10 @@ def write_to_shell(message, value, colour):
 
 def check_config_value(regex, secure_value, message, content):
     u"""Test method for doing entire check without code replication"""
+    (value_test, secure_value) = secure_value
     if regex.search(content):
         value = regex.findall(content)[-1]
-        if secure_value == value:
+        if globals()[value_test](value, secure_value):
             colour = "green"
             value = value + " (secure)"
         else:
@@ -58,7 +75,7 @@ def check_config_value(regex, secure_value, message, content):
     else:
         colour = "yellow"
         value = "unknown"
-        
+
     write_to_shell(message, value, colour)
 
 def get_content(system):
@@ -75,11 +92,11 @@ def get_content(system):
 if not is_root():
     sys.stdout.write("Only root may run this command\n")
     sys.exit(os.EX_NOUSER)
-    
+
 for system in config_checks:
     sys.stdout.write("Checking: %s\n" % (system['name']))
     content = get_content(system)
-    
+
     for (regex, secure_value, message) in system['tests']:
         check_config_value(regex, secure_value, message, content)
 
