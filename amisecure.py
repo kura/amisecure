@@ -10,10 +10,10 @@ config_checks = (
             "/etc/ssh/sshd_config",
         ),
         "tests": (
-            (re.compile(r"PermitRootLogin+\s+(?P<value>yes|no)"), ("equal_to", "no"), "Permit root logins"),
-            (re.compile(r"UsePrivilegeSeparation+\s+(?P<value>yes|no)"), ("equal_to", "yes"), "Use privilege separation"),
-            (re.compile(r"StrictModes+\s+(?P<value>yes|no)"), ("equal_to", "yes"), "Use strict modes"),
-            (re.compile(r"PermitEmptyPasswords+\s+(?P<value>yes|no)"), ("equal_to", "no"), "Permit empty passwords"),
+            (re.compile(r"[^#]+PermitRootLogin+\s+(?P<value>yes|no)"), ("equal_to", "no"), "Permit root logins"),
+            (re.compile(r"[^#]+UsePrivilegeSeparation+\s+(?P<value>yes|no)"), ("equal_to", "yes"), "Use privilege separation"),
+            (re.compile(r"[^#]+StrictModes+\s+(?P<value>yes|no)"), ("equal_to", "yes"), "Use strict modes"),
+            (re.compile(r"[^#]+PermitEmptyPasswords+\s+(?P<value>yes|no)"), ("equal_to", "no"), "Permit empty passwords"),
         ),
     },
     {
@@ -25,6 +25,9 @@ config_checks = (
             "/etc/apache2/conf.d/*",
         ),
         "tests": (
+            (re.compile(r"[^#a-zA-Z0-9]+Timeout+\s+(?P<value>[0-9]*)"), ("less_than", 6), "Timeout"),
+            (re.compile(r"[^#a-zA-Z0-9]+KeepAliveTimeout+\s+(?P<value>[0-9]*)"), ("less_than", 4), "Keep alive timeout"),
+            (re.compile(r"[^#a-zA-Z0-9]+ServerTokens+\s+(?P<value>OS|Full|Minimal)"), ("equal_to", "OS"), "Server tokens"),
         ),
     },
 )
