@@ -17,7 +17,7 @@ config_checks = (
         ),
     },
     {
-        "name": "apache",
+        "name": "apache2",
         "files": (
             "/etc/apache2/httpd.conf",
             "/etc/apache2/ports.conf",
@@ -40,6 +40,17 @@ config_checks = (
         ),
         "tests": (
             (re.compile(r"[^#a-zA-Z0-9]+server_tokens+\s+(?P<value>on|off)"), ("equal_to", "off"), "Server tokens"),
+        ),
+    },
+    {
+        "name": "php5",
+        "files": (
+            "/etc/php5/apache2/php.ini",
+            "/etc/php5/cli/php.ini",
+            "/etc/php5/conf.d/*",
+        ),
+        "tests": (
+            (re.compile(r"[^#a-zA-Z0-9]+expose_php+\s=\s+(?P<value>On|Off)"), ("equal_to", "Off"), "Expose PHP"),
         ),
     },
 )
