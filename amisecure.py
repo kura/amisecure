@@ -108,7 +108,6 @@ config_checks = (
                 ("equal_to", "0"),
                 "Session trans SID"
             ),
-
         ),
     },
 )
