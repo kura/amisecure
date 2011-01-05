@@ -10,10 +10,26 @@ config_checks = (
             "/etc/ssh/sshd_config",
         ),
         "tests": (
-            (re.compile(r"[^#]+PermitRootLogin+\s+(?P<value>yes|no)", re.IGNORECASE), ("equal_to", "no"), "Permit root logins"),
-            (re.compile(r"[^#]+UsePrivilegeSeparation+\s+(?P<value>yes|no)", re.IGNORECASE), ("equal_to", "yes"), "Use privilege separation"),
-            (re.compile(r"[^#]+StrictModes+\s+(?P<value>yes|no)", re.IGNORECASE), ("equal_to", "yes"), "Use strict modes"),
-            (re.compile(r"[^#]+PermitEmptyPasswords+\s+(?P<value>yes|no)", re.IGNORECASE), ("equal_to", "no"), "Permit empty passwords"),
+            (
+                re.compile(r"[^#]+PermitRootLogin+\s+(?P<value>yes|no)", re.IGNORECASE),
+                ("equal_to", "no"),
+                "Permit root logins"
+            ),
+            (
+                re.compile(r"[^#]+UsePrivilegeSeparation+\s+(?P<value>yes|no)", re.IGNORECASE), 
+                ("equal_to", "yes"), 
+                "Use privilege separation"
+            ),
+            (
+                re.compile(r"[^#]+StrictModes+\s+(?P<value>yes|no)", re.IGNORECASE), 
+                ("equal_to", "yes"), 
+                "Use strict modes"
+            ),
+            (
+                re.compile(r"[^#]+PermitEmptyPasswords+\s+(?P<value>yes|no)", re.IGNORECASE), 
+                ("equal_to", "no"), 
+                "Permit empty passwords"
+            ),
         ),
     },
     {
@@ -26,9 +42,27 @@ config_checks = (
             "/etc/apache2/sites-enabled/*",
         ),
         "tests": (
-            (re.compile(r"[^#a-z0-9]+Timeout+\s+(?P<value>[0-9]*)", re.IGNORECASE), ("less_than", 6), "Timeout"),
-            (re.compile(r"[^#a-z0-9]+KeepAliveTimeout+\s+(?P<value>[0-9]*)", re.IGNORECASE), ("less_than", 4), "Keep alive timeout"),
-            (re.compile(r"[^#a-z0-9]+ServerTokens+\s+(?P<value>OS|Full|Minimal)", re.IGNORECASE), ("equal_to", "os"), "Server tokens"),
+            (
+                re.compile(r"[^#a-z0-9]+Timeout+\s+(?P<value>[0-9]*)", re.IGNORECASE), 
+                ("less_than", 6), 
+                "Timeout"
+            ),
+            (
+                re.compile(r"[^#a-z0-9]+KeepAliveTimeout+\s+(?P<value>[0-9]*)", re.IGNORECASE), 
+                ("less_than", 4), 
+                "Keep alive timeout"
+            ),
+            (
+                re.compile(r"[^#a-z0-9]+ServerTokens+\s+(?P<value>OS|Full|Minimal)", re.IGNORECASE), 
+                ("equal_to", "os"), 
+                "Server tokens"
+            ),
+            (
+                re.compile(r"[^#a-z0-9]+ServerSignature+\s+(?P<value>on|off)", re.IGNORECASE),
+                ("equal_to", "off"),
+                "Server signature"
+            ),
+
         ),
     },
     {
@@ -39,7 +73,11 @@ config_checks = (
             "/etc/nginx/sites-enabled/*",
         ),
         "tests": (
-            (re.compile(r"[^#a-z0-9]+server_tokens+\s+(?P<value>on|off)", re.IGNORECASE), ("equal_to", "off"), "Server tokens"),
+            (
+                re.compile(r"[^#a-z0-9]+server_tokens+\s+(?P<value>on|off)", re.IGNORECASE), 
+                ("equal_to", "off"), 
+                "Server tokens"
+            ),
         ),
     },
     {
@@ -50,7 +88,27 @@ config_checks = (
             "/etc/php5/conf.d/*",
         ),
         "tests": (
-            (re.compile(r"[^#a-z0-9]+expose_php+\s=\s+(?P<value>on|off)", re.IGNORECASE), ("equal_to", "Off"), "Expose PHP"),
+            (
+                re.compile(r"[^#a-z0-9]+expose_php+\s=\s+(?P<value>on|off)", re.IGNORECASE), 
+                ("equal_to", "Off"), 
+                "Expose PHP"
+            ),
+            (
+                re.compile(r"[^#a-z0-9]+session.use_only_cookies+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                ("equal_to", "1"),
+                "Use only cookies"
+            ),
+            (
+                re.compile(r"[^#a-z0-9]+session.cookie_httponly+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                ("equal_to", "1"),
+                "HTTPOnly cookies"
+            ),
+            (
+                re.compile(r"[^#a-z0-9]+session.use_trans_sid+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                ("equal_to", "0"),
+                "Session trans SID"
+            ),
+
         ),
     },
 )
