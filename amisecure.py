@@ -6,6 +6,8 @@ import os
 config_checks = (
     {
         "name": "ssh",
+        "content_function": "get_file_content",
+        "check_function": "check_value",
         "files": (
             "/etc/ssh/sshd_config",
         ),
@@ -34,6 +36,8 @@ config_checks = (
     },
     {
         "name": "apache2",
+        "content_function": "get_file_content",
+        "check_function": "check_value",
         "files": (
             "/etc/apache2/httpd.conf",
             "/etc/apache2/ports.conf",
@@ -67,6 +71,8 @@ config_checks = (
     },
     {
         "name": "nginx",
+        "content_function": "get_file_content",
+        "check_function": "check_value",
         "files": (
             "/etc/nginx/nginx.conf",
             "/etc/nginx/conf.d/*",
@@ -82,6 +88,8 @@ config_checks = (
     },
     {
         "name": "php5",
+        "content_function": "get_file_content",
+        "check_function": "check_value",
         "files": (
             "/etc/php5/apache2/php.ini",
             "/etc/php5/cli/php.ini",
@@ -110,6 +118,21 @@ config_checks = (
             ),
         ),
     },
+    {
+        "name": "denyhosts",
+        "content_function": "get_shell_output",
+        "check_function": "check_value",
+        "files": (
+        ),
+        "shell_command": "ps aux | grep denyhosts | grep -v grep",
+        "tests": (
+            (
+                re.compile(r"denyhosts", re.IGNORECASE),
+                ("like", re.compile(r"denyhosts", re.IGNORECASE)),
+                "DenyHosts running"
+            ),
+        ),
+    },
 )
 
 
@@ -117,6 +140,12 @@ def is_root():
     u""" Check if user is super user"""
     if os.geteuid() == 0:
         return True
+    return False
+
+def like(this, regex):
+    u"""Check content against a regex"""
+    if regex.match(this):
+       return True
     return False
 
 def equal_to(this, that):
@@ -148,7 +177,7 @@ def write_to_shell(message, value, colour):
     sys.stdout.write("- %s ... " % (message))
     sys.stdout.write(colour + value.upper() + "\x1b[00m" + "\n")
 
-def check_config_value(regex, secure_value, message, content):
+def check_value(regex, secure_value, message, content):
     u"""Test method for doing entire check without code replication"""
     (value_test, secure_value) = secure_value
     if regex.search(content):
@@ -165,7 +194,7 @@ def check_config_value(regex, secure_value, message, content):
 
     write_to_shell(message, value, colour)
 
-def get_content(system):
+def get_file_content(system):
     u"""Open up all listed config files and cat their content together"""
     content = ""
     for file in system['files']:
@@ -177,15 +206,19 @@ def get_content(system):
             content = content + "\n" + open(file, "r").read()
     return content
 
+def get_shell_output(system):
+    u"""Get content output from a shell command"""
+    return os.popen(system['shell_command']).read()
+
 if not is_root():
     sys.stdout.write("Only root may run this command\n")
     sys.exit(os.EX_NOUSER)
 
 for system in config_checks:
     sys.stdout.write("Checking: %s\n" % (system['name']))
-    content = get_content(system)
+    content = globals()[system['content_function']](system)
 
     for (regex, secure_value, message) in system['tests']:
-        check_config_value(regex, secure_value, message, content)
+        globals()[system['check_function']](regex, secure_value, message, content)
 
 sys.exit(os.EX_OK)
