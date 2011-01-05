@@ -57,21 +57,25 @@ config_checks = (
 
 
 def is_root():
+    u""" Check if user is super user"""
     if os.geteuid() == 0:
         return True
     return False
 
 def equal_to(this, that):
+    u"""Convert values to strings and check if they match"""
     if str(this).lower() == str(that).lower():
         return True
     return False
 
 def greater_than(this, that):
+    u"""Convert values to integers and check if the first is greater than the second"""
     if int(this) > int(that):
         return True
     return False
 
 def less_than(this, that):
+    u"""Convert values to integers and check if the first is less than the second"""
     if int(this) < int(that):
         return True
     return False
@@ -105,6 +109,7 @@ def check_config_value(regex, secure_value, message, content):
     write_to_shell(message, value, colour)
 
 def get_content(system):
+    u"""Open up all listed config files and cat their content together"""
     content = ""
     for file in system['files']:
         if re.search(r"\*$", file):
