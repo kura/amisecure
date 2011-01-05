@@ -23,11 +23,23 @@ config_checks = (
             "/etc/apache2/ports.conf",
             "/etc/apache2/apache2.conf",
             "/etc/apache2/conf.d/*",
+            "/etc/apache2/sites-enabled/*",
         ),
         "tests": (
             (re.compile(r"[^#a-zA-Z0-9]+Timeout+\s+(?P<value>[0-9]*)"), ("less_than", 6), "Timeout"),
             (re.compile(r"[^#a-zA-Z0-9]+KeepAliveTimeout+\s+(?P<value>[0-9]*)"), ("less_than", 4), "Keep alive timeout"),
             (re.compile(r"[^#a-zA-Z0-9]+ServerTokens+\s+(?P<value>OS|Full|Minimal)"), ("equal_to", "OS"), "Server tokens"),
+        ),
+    },
+    {
+        "name": "nginx",
+        "files": (
+            "/etc/nginx/nginx.conf",
+            "/etc/nginx/conf.d/*",
+            "/etc/nginx/sites-enabled/*",
+        ),
+        "tests": (
+            (re.compile(r"[^#a-zA-Z0-9]+server_tokens+\s+(?P<value>on|off)"), ("equal_to", "off"), "Server tokens"),
         ),
     },
 )
