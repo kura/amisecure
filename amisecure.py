@@ -1,7 +1,23 @@
 #!/usr/bin/env python
+
+"""Runs multiple checks across the system to check for secureness
+
+Checks are done on system config files, running security processes,
+firewall rules and more.
+"""
+
 import re
 import sys
 import os
+
+__author__ = "Kura"
+__copyright__ = "None"
+__credits__ = ["Kura"]
+__license__ = "Free"
+__version__ = "0 Alpha"
+__maintainer__ = "Kura"
+__email__ = "kura@deviling.net"
+__status__ = "Alpha/Test"
 
 config_checks = (
     {
