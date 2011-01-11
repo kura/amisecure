@@ -123,7 +123,7 @@ config_checks = (
                 "Use only cookies"
             ),
             (
-                re.compile(r"[^#a-z0-9]+session.cookie_httponly+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^#a-z0-9]+session.cookie-httponly+\s=\s+(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"),
                 "HTTPOnly cookies"
             ),
