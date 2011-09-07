@@ -75,8 +75,8 @@ config_checks = (
             ),
             (
                 re.compile(r"[^.*]ServerTokens\s(?P<value>Prod|ProductOnly|Major|Minor|Min|Minimal|OS|Full)", re.IGNORECASE), 
-                ("equal_to", ("prod", "productonly")), True,
-                "Server tokens", "Prod and ProductOnly are considered 'secure' but both are the same"
+                ("equal_to", ("prod", "productonly", "major")), True,
+                "Server tokens", "Prod, ProductOnly and Major are considered 'secure' but both are the same"
             ),
             (
                 re.compile(r"[^.*]ServerSignature\s(?P<value>on|off)", re.IGNORECASE),
