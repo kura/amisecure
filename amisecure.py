@@ -74,9 +74,9 @@ config_checks = (
                 "Keep alive timeout", "Less than 3 seconds is good"
             ),
             (
-                re.compile(r"[^.*]ServerTokens\s(?P<value>OS|Full|Minimal)", re.IGNORECASE), 
-                ("equal_to", "os"), True,
-                "Server tokens", "OS or Minimal are considered 'secure'"
+                re.compile(r"[^.*]ServerTokens\s(?P<value>Prod|ProductOnly|Major|Minor|Min|Minimal|OS|Full)", re.IGNORECASE), 
+                ("equal_to", ("prod", "productonly")), True,
+                "Server tokens", "Prod and ProductOnly are considered 'secure' but both are the same"
             ),
             (
                 re.compile(r"[^.*]ServerSignature\s(?P<value>on|off)", re.IGNORECASE),
@@ -87,6 +87,16 @@ config_checks = (
                 re.compile(r"[^.*]traceenable\s(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"), True,
                 "Trace Enable", "Always disable unless required"
+            ),
+            (
+                re.compile(r"[^.*]Options\s.*?(?P<value>Includes).*", re.IGNORECASE),
+                ("equal_to", ""), "Found",
+                "ServerSide includes", "Only enable when required"
+            ),
+                        (
+                re.compile(r"[^.*]Options\s.*?(?P<value>ExecCGI).*", re.IGNORECASE),
+                ("equal_to", ""), "Found",
+                "CGI execution", "Only enable when if you're using CGI"
             ),
             (
                 re.compile(r"[^.*]Options\s.*?(?P<value>Indexes).*", re.IGNORECASE),
@@ -203,6 +213,10 @@ def like(this, regex):
 
 def equal_to(this, that):
     """Convert values to strings and check if they match"""
+    if isinstance(that, (tuple)):
+        for v in that:
+            if str(this).lower() == str(that).lower():
+                return True
     if str(this).lower() == str(that).lower():
         return True
     return False
