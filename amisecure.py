@@ -15,7 +15,7 @@ __author__ = "Kura"
 __copyright__ = "None"
 __credits__ = ["Kura"]
 __license__ = "Free"
-__version__ = "0 Alpha"
+__version__ = "0.0.1 (Alpha)"
 __maintainer__ = "Kura"
 __email__ = "kura@deviling.net"
 __status__ = "Alpha/Test"
@@ -32,22 +32,22 @@ config_checks = (
             (
                 re.compile(r"[^.*]PermitRootLogin\s(?P<value>yes|no)", re.IGNORECASE),
                 ("equal_to", "no"), True,
-                "Permit root logins", ""
+                "Permit root logins", "Always disable this option"
             ),
             (
                 re.compile(r"[^.*]UsePrivilegeSeparation\s(?P<value>yes|no)", re.IGNORECASE), 
                 ("equal_to", "yes"), True,
-                "Use privilege separation", ""
+                "Use privilege separation", "Always enable this option"
             ),
             (
                 re.compile(r"[^.*]StrictModes\s(?P<value>yes|no)", re.IGNORECASE), 
                 ("equal_to", "yes"), True,
-                "Use strict modes", ""
+                "Use strict modes", "Always enable this option"
             ),
             (
                 re.compile(r"[^.*]PermitEmptyPasswords\s(?P<value>yes|no)", re.IGNORECASE), 
                 ("equal_to", "no"), True,
-                "Permit empty passwords", ""
+                "Permit empty passwords", "Always disable this option"
             ),
         ),
     },
@@ -81,12 +81,12 @@ config_checks = (
             (
                 re.compile(r"[^.*]ServerSignature\s(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"), True,
-                "Server signature", ""
+                "Server signature", "Off is considered 'secure'"
             ),
             (
                 re.compile(r"[^.*]traceenable\s(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"), True,
-                "Trace Enable", ""
+                "Trace Enable", "Always disable unless required"
             ),
             (
                 re.compile(r"[^.*]Options\s.*?(?P<value>Indexes).*", re.IGNORECASE),
@@ -135,7 +135,7 @@ config_checks = (
             (
                 re.compile(r"[^.*]expose_php\s=\s(?P<value>on|off)", re.IGNORECASE), 
                 ("equal_to", "off"), True,
-                "Expose PHP", ""
+                "Expose PHP", "Always disable this option"
             ),
             (
                 re.compile(r"[^.*]session.use_only_cookies\s=\s(?P<value>1|0)", re.IGNORECASE),
@@ -145,7 +145,7 @@ config_checks = (
             (
                 re.compile(r"[^.*]session.cookie-httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"), True,
-                "HTTPOnly cookies", ""
+                "HTTPOnly cookies", "Cookies set by the server can only be read by the client"
             ),
             (
                 re.compile(r"[^.*]session.use_trans_sid\s=\s(?P<value>1|0)", re.IGNORECASE),
@@ -165,7 +165,7 @@ config_checks = (
             (
                 re.compile(r"denyhosts", re.IGNORECASE),
                 ("like", re.compile(r"denyhosts", re.IGNORECASE)), True,
-                "DenyHosts running", ""
+                "DenyHosts running", "When running it will help protect your server from SSH bruteforcing"
             ),
         ),
     },
@@ -176,7 +176,7 @@ GREEN =  "\x1b[01;32m"
 RED = "\x1b[01;31m"
 YELLOW = "\x1b[01;33m"
 BLUE = "\x1b[01;34m"
-PURPLE = "\x1b[01;35m"
+PURPLE = "\x1b[01;4;35m"
 RESET = "\x1b[00m"
 
 
@@ -213,7 +213,7 @@ def less_than(this, that):
 def write_to_shell(message, additional, value, colour):
     """Output response to shell"""
     colour = globals()[colour.upper()]
-    sys.stdout.write("- %s ... " % (message))
+    sys.stdout.write("- %s ... " % (message,))
     sys.stdout.write(colour + value.upper() + RESET)
     sys.stdout.write("\n")
     if additional:
@@ -254,11 +254,13 @@ def get_file_content(system):
     return clean(content)
 
 def clean(content):
+    """Clean up the file contents, remove extra spaces and commented lines"""
     stripped_content = ""
     for line in content.split("\n"):
         line = line.lstrip()
         line = re.sub(r"\s+", " ", line)
-        if not re.match(r"[^.*]#", line) and not re.match(r"#", line):
+        if not re.match(r"[^.*]#", line) and not re.match(r"#", line) \
+        and not re.match(r"[^.*];", line) and not re.match(r";", line):
             stripped_content += line + "\n"
     return stripped_content
 
@@ -267,10 +269,12 @@ def get_shell_output(system):
     return os.popen(system['shell_command']).read()
 
 if not is_root():
-    sys.stdout.write("Only root may run this command\n")
+    sys.stdout.write("You need to be a superuser to run this program\n")
     sys.exit(os.EX_NOUSER)
 
-sys.stdout.write("%sChecking your system ...%s" % (GREEN, RESET))
+sys.stdout.write("%samisecure %s%s" % (BLUE, __version__, RESET))
+sys.stdout.write("\n\n")
+sys.stdout.write("%sScanning your system ...%s" % (GREEN, RESET))
 sys.stdout.write("\n\n")
 
 for system in config_checks:
@@ -281,5 +285,5 @@ for system in config_checks:
     sys.stdout.write("\n")
 
 sys.stdout.write("%s ... Done%s" % (GREEN, RESET))
-sys.stdout.write("\n")
+sys.stdout.write("\n\n")
 sys.exit(os.EX_OK)
