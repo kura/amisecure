@@ -90,8 +90,8 @@ config_checks = (
             ),
             (
                 re.compile(r"[^.*]Options\s.*?(?P<value>Indexes).*", re.IGNORECASE),
-                ("equal_to", ""), True,
-                "Directory Listing", ""
+                ("equal_to", ""), "Found",
+                "Directory Listing", "Enabling this allows people to browse you web-filesystem"
             ),
             (
                 re.compile(r"[^.*]ScriptAlias\s(?P<value>/cgi-bin/).*", re.IGNORECASE),
