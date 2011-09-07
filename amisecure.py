@@ -96,12 +96,12 @@ config_checks = (
             (
                 re.compile(r"[^.*]ScriptAlias\s(?P<value>/cgi-bin/).*", re.IGNORECASE),
                 ("equal_to", ""), "Found",
-                "cgi-bin alias", "Always disable unless required"
+                "cgi-bin alias", "Controls cgi-bin aliasing"
             ),
             (
                 re.compile(r"[^.*]Alias\s(?P<value>/doc/).*", re.IGNORECASE),
                 ("equal_to", ""), "Found",
-                "Docs alias", "Always disable unless required"
+                "Docs alias", "Controls Apache doc aliasing"
             ),
         ),
     },
@@ -118,7 +118,7 @@ config_checks = (
             (
                 re.compile(r"[^.*]server_tokens\s(?P<value>on|off)", re.IGNORECASE), 
                 ("equal_to", "off"), True,
-                "Server tokens", "Off is considered 'secure'"
+                "Server tokens", "Hides or shows nginx version information"
             ),
         ),
     },
@@ -135,7 +135,17 @@ config_checks = (
             (
                 re.compile(r"[^.*]expose_php\s=\s(?P<value>on|off)", re.IGNORECASE), 
                 ("equal_to", "off"), True,
-                "Expose PHP", "Always disable this option"
+                "Expose PHP", "Controls PHP exposing itself via HTTP headers etc"
+            ),
+            (
+                re.compile(r"[^.*]register_globals\s=\s(?P<value>on|off)", re.IGNORECASE), 
+                ("equal_to", "off"), True,
+                "Register globals", "Controls whether GET, POST, etc variables are globally registered"
+            ),
+            (
+                re.compile(r"[^.*]display_errors\s=\s(?P<value>on|off)", re.IGNORECASE), 
+                ("equal_to", "off"), True,
+                "Display errors", "Controls whether PHP prints errors"
             ),
             (
                 re.compile(r"[^.*]session.use_only_cookies\s=\s(?P<value>1|0)", re.IGNORECASE),
@@ -150,7 +160,7 @@ config_checks = (
             (
                 re.compile(r"[^.*]session.use_trans_sid\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "0"), True,
-                "Session trans SID", ""
+                "Session trans SID", "Enables or disables URL-based session ids"
             ),
         ),
     },
