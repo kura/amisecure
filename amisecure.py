@@ -217,7 +217,7 @@ def write_to_shell(message, additional, value, colour):
     sys.stdout.write(colour + value.upper() + RESET)
     sys.stdout.write("\n")
     if additional:
-        sys.stdout.write("    %s%s%s"% (BLUE, additional, RESET))
+        sys.stdout.write("  %s%s%s"% (BLUE, additional, RESET))
         sys.stdout.write("\n")
 
 def check_value(regex, secure_value, display_value, message, additional, content):
@@ -235,7 +235,7 @@ def check_value(regex, secure_value, display_value, message, additional, content
             value = value + " (not secure)"
     else:
         colour = "yellow"
-        value = "unknown (not installed?)"
+        value = "unknown"
     write_to_shell(message, additional, value, colour)
 
 def get_file_content(system):
