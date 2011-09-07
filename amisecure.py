@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-"""Runs multiple checks across the system to check for secureness
+"""
+Runs multiple checks across the system to check for secureness
 
 Checks are done on system config files, running security processes,
 firewall rules and more.
@@ -216,8 +217,10 @@ def get_file_content(system):
     for file in system['files']:
         if re.search(r"\*$", file):
             (path, asterix) = os.path.split(file)
-            for extra_file in os.listdir(path):
-                content = content + "\n" + open(os.path.join(path, extra_file), "r").read()
+            if os.path.exists(path):
+                for extra_file in os.listdir(path):
+                    if os.path.exists(extra_file):
+                        content = content + "\n" + open(os.path.join(path, extra_file), "r").read()
         elif os.path.exists(file):
             content = content + "\n" + open(file, "r").read()
     return content
