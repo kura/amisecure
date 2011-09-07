@@ -140,7 +140,7 @@ config_checks = (
             (
                 re.compile(r"[^.*]session.use_only_cookies\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"), True,
-                "Use only cookies", ""
+                "Use only cookies", "Prevents attacks involving passing session ids in URLs"
             ),
             (
                 re.compile(r"[^.*]session.cookie-httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
