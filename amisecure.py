@@ -31,23 +31,23 @@ config_checks = (
         "tests": (
             (
                 re.compile(r"[^.*]PermitRootLogin\s(?P<value>yes|no)", re.IGNORECASE),
-                ("equal_to", "no"),
-                "Permit root logins"
+                ("equal_to", "no"), True,
+                "Permit root logins", ""
             ),
             (
                 re.compile(r"[^.*]UsePrivilegeSeparation\s(?P<value>yes|no)", re.IGNORECASE), 
-                ("equal_to", "yes"), 
-                "Use privilege separation"
+                ("equal_to", "yes"), True,
+                "Use privilege separation", ""
             ),
             (
                 re.compile(r"[^.*]StrictModes\s(?P<value>yes|no)", re.IGNORECASE), 
-                ("equal_to", "yes"), 
-                "Use strict modes"
+                ("equal_to", "yes"), True,
+                "Use strict modes", ""
             ),
             (
                 re.compile(r"[^.*]PermitEmptyPasswords\s(?P<value>yes|no)", re.IGNORECASE), 
-                ("equal_to", "no"), 
-                "Permit empty passwords"
+                ("equal_to", "no"), True,
+                "Permit empty passwords", ""
             ),
         ),
     },
@@ -65,38 +65,43 @@ config_checks = (
         "tests": (
             (
                 re.compile(r"[^.*]Timeout\s(?P<value>[0-9]*)", re.IGNORECASE), 
-                ("less_than", 6), 
-                "Timeout"
+                ("less_than", 6), True,
+                "Timeout", "Less than 5 seconds is good"
             ),
             (
                 re.compile(r"[^.*]KeepAliveTimeout\s(?P<value>[0-9]*)", re.IGNORECASE), 
-                ("less_than", 4), 
-                "Keep alive timeout"
+                ("less_than", 4), True,
+                "Keep alive timeout", "Less than 3 seconds is good"
             ),
             (
                 re.compile(r"[^.*]ServerTokens\s(?P<value>OS|Full|Minimal)", re.IGNORECASE), 
-                ("equal_to", "os"), 
-                "Server tokens"
+                ("equal_to", "os"), True,
+                "Server tokens", "OS or Minimal are considered 'secure'"
             ),
             (
                 re.compile(r"[^.*]ServerSignature\s(?P<value>on|off)", re.IGNORECASE),
-                ("equal_to", "off"),
-                "Server signature"
+                ("equal_to", "off"), True,
+                "Server signature", ""
             ),
             (
                 re.compile(r"[^.*]traceenable\s(?P<value>on|off)", re.IGNORECASE),
-                ("equal_to", "off"),
-                "Trace Enable"
+                ("equal_to", "off"), True,
+                "Trace Enable", ""
             ),
             (
                 re.compile(r"[^.*]Options\s.*?(?P<value>Indexes).*", re.IGNORECASE),
-                ("equal_to", ""),
-                "Directory Listing"
+                ("equal_to", ""), True,
+                "Directory Listing", ""
             ),
             (
                 re.compile(r"[^.*]ScriptAlias\s(?P<value>/cgi-bin/).*", re.IGNORECASE),
-                ("equal_to", ""),
-                "cgi-bin alias"
+                ("equal_to", ""), "Found",
+                "cgi-bin alias", "Always disable unless required"
+            ),
+            (
+                re.compile(r"[^.*]Alias\s(?P<value>/doc/).*", re.IGNORECASE),
+                ("equal_to", ""), "Found",
+                "Docs alias", "Always disable unless required"
             ),
         ),
     },
@@ -112,8 +117,8 @@ config_checks = (
         "tests": (
             (
                 re.compile(r"[^.*]server_tokens\s(?P<value>on|off)", re.IGNORECASE), 
-                ("equal_to", "off"), 
-                "Server tokens"
+                ("equal_to", "off"), True,
+                "Server tokens", "Off is considered 'secure'"
             ),
         ),
     },
@@ -129,23 +134,23 @@ config_checks = (
         "tests": (
             (
                 re.compile(r"[^.*]expose_php\s=\s(?P<value>on|off)", re.IGNORECASE), 
-                ("equal_to", "off"), 
-                "Expose PHP"
+                ("equal_to", "off"), True,
+                "Expose PHP", ""
             ),
             (
                 re.compile(r"[^.*]session.use_only_cookies\s=\s(?P<value>1|0)", re.IGNORECASE),
-                ("equal_to", "1"),
-                "Use only cookies"
+                ("equal_to", "1"), True,
+                "Use only cookies", ""
             ),
             (
                 re.compile(r"[^.*]session.cookie-httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
-                ("equal_to", "1"),
-                "HTTPOnly cookies"
+                ("equal_to", "1"), True,
+                "HTTPOnly cookies", ""
             ),
             (
                 re.compile(r"[^.*]session.use_trans_sid\s=\s(?P<value>1|0)", re.IGNORECASE),
-                ("equal_to", "0"),
-                "Session trans SID"
+                ("equal_to", "0"), True,
+                "Session trans SID", ""
             ),
         ),
     },
@@ -159,12 +164,20 @@ config_checks = (
         "tests": (
             (
                 re.compile(r"denyhosts", re.IGNORECASE),
-                ("like", re.compile(r"denyhosts", re.IGNORECASE)),
-                "DenyHosts running"
+                ("like", re.compile(r"denyhosts", re.IGNORECASE)), True,
+                "DenyHosts running", ""
             ),
         ),
     },
 )
+
+
+GREEN =  "\x1b[01;32m"
+RED = "\x1b[01;31m"
+YELLOW = "\x1b[01;33m"
+BLUE = "\x1b[01;34m"
+PURPLE = "\x1b[01;35m"
+RESET = "\x1b[00m"
 
 
 def is_root():
@@ -197,22 +210,23 @@ def less_than(this, that):
         return True
     return False
 
-def write_to_shell(message, value, colour):
+def write_to_shell(message, additional, value, colour):
     """Output response to shell"""
-    if colour == "green":
-        colour = "\x1b[01;32m"
-    elif colour == "red":
-        colour = "\x1b[01;31m"
-    else:
-        colour = "\x1b[01;33m"
+    colour = globals()[colour.upper()]
     sys.stdout.write("- %s ... " % (message))
-    sys.stdout.write(colour + value.upper() + "\x1b[00m" + "\n")
+    sys.stdout.write(colour + value.upper() + RESET)
+    sys.stdout.write("\n")
+    if additional:
+        sys.stdout.write("    %s%s%s"% (BLUE, additional, RESET))
+        sys.stdout.write("\n")
 
-def check_value(regex, secure_value, message, content):
+def check_value(regex, secure_value, display_value, message, additional, content):
     """Test method for doing entire check without code replication"""
     (value_test, secure_value) = secure_value
     if regex.search(content):
         value = regex.findall(content)[-1]
+        if display_value is not True:
+            value = display_value
         if globals()[value_test](value, secure_value):
             colour = "green"
             value = value + " (secure)"
@@ -221,24 +235,8 @@ def check_value(regex, secure_value, message, content):
             value = value + " (not secure)"
     else:
         colour = "yellow"
-        value = "unknown"
-    write_to_shell(message, value, colour)
-
-def check_multi_value(regex, secure_value, message, content):
-    (value_test, secure_value) = secure_value
-    if regex.search(content):
-        values = regex.findall(content)
-        for value in values:
-            if globals()[value_test](value, secure_value):
-                colour = "green"
-                value = value + " (secure)"
-            else:
-                colour = "red"
-                value = value + " (not secure)"
-        else:
-            colour = "yellow"
-            value = "unknown"
-    write_to_shell(message, value, colour)
+        value = "unknown (not installed?)"
+    write_to_shell(message, additional, value, colour)
 
 def get_file_content(system):
     """Open up all listed config files and cat their content together"""
@@ -272,11 +270,16 @@ if not is_root():
     sys.stdout.write("Only root may run this command\n")
     sys.exit(os.EX_NOUSER)
 
+sys.stdout.write("%sChecking your system ...%s" % (GREEN, RESET))
+sys.stdout.write("\n\n")
+
 for system in config_checks:
-    sys.stdout.write("Checking: %s\n" % (system['name']))
+    sys.stdout.write("%sChecking: %s%s\n" % (PURPLE, system['name'], RESET))
     content = globals()[system['content_function']](system)
+    for (regex, secure_value, display_value, message, additional) in system['tests']:
+        globals()[system['check_function']](regex, secure_value, display_value, message, additional, content)
+    sys.stdout.write("\n")
 
-    for (regex, secure_value, message) in system['tests']:
-        globals()[system['check_function']](regex, secure_value, message, content)
-
+sys.stdout.write("%s ... Done%s" % (GREEN, RESET))
+sys.stdout.write("\n")
 sys.exit(os.EX_OK)
