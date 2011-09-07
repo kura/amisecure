@@ -191,7 +191,7 @@ RESET = "\x1b[00m"
 
 
 def is_root():
-    """ Check if user is super user"""
+    """Check if user is super user"""
     if os.geteuid() == 0:
         return True
     return False
