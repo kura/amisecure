@@ -154,37 +154,37 @@ config_checks = (
 
 
 def is_root():
-    u""" Check if user is super user"""
+    """ Check if user is super user"""
     if os.geteuid() == 0:
         return True
     return False
 
 def like(this, regex):
-    u"""Check content against a regex"""
+    """Check content against a regex"""
     if regex.match(this):
        return True
     return False
 
 def equal_to(this, that):
-    u"""Convert values to strings and check if they match"""
+    """Convert values to strings and check if they match"""
     if str(this).lower() == str(that).lower():
         return True
     return False
 
 def greater_than(this, that):
-    u"""Convert values to integers and check if the first is greater than the second"""
+    """Convert values to integers and check if the first is greater than the second"""
     if int(this) > int(that):
         return True
     return False
 
 def less_than(this, that):
-    u"""Convert values to integers and check if the first is less than the second"""
+    """Convert values to integers and check if the first is less than the second"""
     if int(this) < int(that):
         return True
     return False
 
 def write_to_shell(message, value, colour):
-    u"""Output response to shell"""
+    """Output response to shell"""
     if colour == "green":
         colour = "\x1b[01;32m"
     elif colour == "red":
@@ -195,7 +195,7 @@ def write_to_shell(message, value, colour):
     sys.stdout.write(colour + value.upper() + "\x1b[00m" + "\n")
 
 def check_value(regex, secure_value, message, content):
-    u"""Test method for doing entire check without code replication"""
+    """Test method for doing entire check without code replication"""
     (value_test, secure_value) = secure_value
     if regex.search(content):
         value = regex.findall(content)[-1]
@@ -212,7 +212,7 @@ def check_value(regex, secure_value, message, content):
     write_to_shell(message, value, colour)
 
 def get_file_content(system):
-    u"""Open up all listed config files and cat their content together"""
+    """Open up all listed config files and cat their content together"""
     content = ""
     for file in system['files']:
         if re.search(r"\*$", file):
@@ -226,7 +226,7 @@ def get_file_content(system):
     return content
 
 def get_shell_output(system):
-    u"""Get content output from a shell command"""
+    """Get content output from a shell command"""
     return os.popen(system['shell_command']).read()
 
 if not is_root():
