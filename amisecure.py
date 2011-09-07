@@ -143,7 +143,7 @@ config_checks = (
                 "Use only cookies", "Prevents attacks involving passing session ids in URLs"
             ),
             (
-                re.compile(r"[^.*]session.cookie-httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^.*]session.cookie_httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"), True,
                 "HTTPOnly cookies", "Cookies set by the server can only be read by the client"
             ),
