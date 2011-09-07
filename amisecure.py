@@ -30,22 +30,22 @@ config_checks = (
         ),
         "tests": (
             (
-                re.compile(r"[^#]+PermitRootLogin+\s+(?P<value>yes|no)", re.IGNORECASE),
+                re.compile(r"[^.*]PermitRootLogin\s(?P<value>yes|no)", re.IGNORECASE),
                 ("equal_to", "no"),
                 "Permit root logins"
             ),
             (
-                re.compile(r"[^#]+UsePrivilegeSeparation+\s+(?P<value>yes|no)", re.IGNORECASE), 
+                re.compile(r"[^.*]UsePrivilegeSeparation\s(?P<value>yes|no)", re.IGNORECASE), 
                 ("equal_to", "yes"), 
                 "Use privilege separation"
             ),
             (
-                re.compile(r"[^#]+StrictModes+\s+(?P<value>yes|no)", re.IGNORECASE), 
+                re.compile(r"[^.*]StrictModes\s(?P<value>yes|no)", re.IGNORECASE), 
                 ("equal_to", "yes"), 
                 "Use strict modes"
             ),
             (
-                re.compile(r"[^#]+PermitEmptyPasswords+\s+(?P<value>yes|no)", re.IGNORECASE), 
+                re.compile(r"[^.*]PermitEmptyPasswords\s(?P<value>yes|no)", re.IGNORECASE), 
                 ("equal_to", "no"), 
                 "Permit empty passwords"
             ),
@@ -64,26 +64,40 @@ config_checks = (
         ),
         "tests": (
             (
-                re.compile(r"[^#a-z0-9]+Timeout+\s+(?P<value>[0-9]*)", re.IGNORECASE), 
+                re.compile(r"[^.*]Timeout\s(?P<value>[0-9]*)", re.IGNORECASE), 
                 ("less_than", 6), 
                 "Timeout"
             ),
             (
-                re.compile(r"[^#a-z0-9]+KeepAliveTimeout+\s+(?P<value>[0-9]*)", re.IGNORECASE), 
+                re.compile(r"[^.*]KeepAliveTimeout\s(?P<value>[0-9]*)", re.IGNORECASE), 
                 ("less_than", 4), 
                 "Keep alive timeout"
             ),
             (
-                re.compile(r"[^#a-z0-9]+ServerTokens+\s+(?P<value>OS|Full|Minimal)", re.IGNORECASE), 
+                re.compile(r"[^.*]ServerTokens\s(?P<value>OS|Full|Minimal)", re.IGNORECASE), 
                 ("equal_to", "os"), 
                 "Server tokens"
             ),
             (
-                re.compile(r"[^#a-z0-9]+ServerSignature+\s+(?P<value>on|off)", re.IGNORECASE),
+                re.compile(r"[^.*]ServerSignature\s(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"),
                 "Server signature"
             ),
-
+            (
+                re.compile(r"[^.*]traceenable\s(?P<value>on|off)", re.IGNORECASE),
+                ("equal_to", "off"),
+                "Trace Enable"
+            ),
+            (
+                re.compile(r"[^.*]Options\s.*?(?P<value>Indexes).*", re.IGNORECASE),
+                ("equal_to", ""),
+                "Directory Listing"
+            ),
+            (
+                re.compile(r"[^.*]ScriptAlias\s(?P<value>/cgi-bin/).*", re.IGNORECASE),
+                ("equal_to", ""),
+                "cgi-bin alias"
+            ),
         ),
     },
     {
@@ -97,7 +111,7 @@ config_checks = (
         ),
         "tests": (
             (
-                re.compile(r"[^#a-z0-9]+server_tokens+\s+(?P<value>on|off)", re.IGNORECASE), 
+                re.compile(r"[^.*]server_tokens\s(?P<value>on|off)", re.IGNORECASE), 
                 ("equal_to", "off"), 
                 "Server tokens"
             ),
@@ -114,22 +128,22 @@ config_checks = (
         ),
         "tests": (
             (
-                re.compile(r"[^#a-z0-9]+expose_php+\s=\s+(?P<value>on|off)", re.IGNORECASE), 
-                ("equal_to", "Off"), 
+                re.compile(r"[^.*]expose_php\s=\s(?P<value>on|off)", re.IGNORECASE), 
+                ("equal_to", "off"), 
                 "Expose PHP"
             ),
             (
-                re.compile(r"[^#a-z0-9]+session.use_only_cookies+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^.*]session.use_only_cookies\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"),
                 "Use only cookies"
             ),
             (
-                re.compile(r"[^#a-z0-9]+session.cookie-httponly+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^.*]session.cookie-httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"),
                 "HTTPOnly cookies"
             ),
             (
-                re.compile(r"[^#a-z0-9]+session.use_trans_sid+\s=\s+(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^.*]session.use_trans_sid\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "0"),
                 "Session trans SID"
             ),
@@ -208,7 +222,22 @@ def check_value(regex, secure_value, message, content):
     else:
         colour = "yellow"
         value = "unknown"
+    write_to_shell(message, value, colour)
 
+def check_multi_value(regex, secure_value, message, content):
+    (value_test, secure_value) = secure_value
+    if regex.search(content):
+        values = regex.findall(content)
+        for value in values:
+            if globals()[value_test](value, secure_value):
+                colour = "green"
+                value = value + " (secure)"
+            else:
+                colour = "red"
+                value = value + " (not secure)"
+        else:
+            colour = "yellow"
+            value = "unknown"
     write_to_shell(message, value, colour)
 
 def get_file_content(system):
@@ -219,11 +248,21 @@ def get_file_content(system):
             (path, asterix) = os.path.split(file)
             if os.path.exists(path):
                 for extra_file in os.listdir(path):
-                    if os.path.exists(extra_file):
-                        content = content + "\n" + open(os.path.join(path, extra_file), "r").read()
+                    file_path = os.path.join(path, extra_file)
+                    if os.path.exists(file_path):
+                        content += "\n" + open(file_path, "r").read()
         elif os.path.exists(file):
             content = content + "\n" + open(file, "r").read()
-    return content
+    return clean(content)
+
+def clean(content):
+    stripped_content = ""
+    for line in content.split("\n"):
+        line = line.lstrip()
+        line = re.sub(r"\s+", " ", line)
+        if not re.match(r"[^.*]#", line) and not re.match(r"#", line):
+            stripped_content += line + "\n"
+    return stripped_content
 
 def get_shell_output(system):
     """Get content output from a shell command"""
