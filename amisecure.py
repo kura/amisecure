@@ -284,6 +284,6 @@ for system in config_checks:
         globals()[system['check_function']](regex, secure_value, display_value, message, additional, content)
     sys.stdout.write("\n")
 
-sys.stdout.write("%s ... Done%s" % (GREEN, RESET))
+sys.stdout.write("%s... Done%s" % (GREEN, RESET))
 sys.stdout.write("\n\n")
 sys.exit(os.EX_OK)
