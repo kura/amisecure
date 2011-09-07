@@ -128,7 +128,6 @@ config_checks = (
         "check_function": "check_value",
         "files": (
             "/etc/php5/apache2/php.ini",
-            "/etc/php5/cli/php.ini",
             "/etc/php5/conf.d/*",
         ),
         "tests": (
