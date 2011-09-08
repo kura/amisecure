@@ -20,6 +20,10 @@ __maintainer__ = "Kura"
 __email__ = "kura@deviling.net"
 __status__ = "Alpha/Test"
 
+TOTAL_SECURE = 0
+TOTAL_UNSECURE = 0
+TOTAL_UNKNOWN = 0
+
 config_checks = (
     {
         "name": "ssh",
@@ -135,6 +139,21 @@ config_checks = (
                 re.compile(r"[^a-z]server_tokens\s(?P<value>on|off)", re.IGNORECASE), 
                 ("equal_to", "off"), True,
                 "Server tokens", "Hides or shows nginx version information"
+            ),
+            (
+                re.compile(r"[^a-z]autoindex\s(?P<value>on|off)", re.IGNORECASE), 
+                ("equal_to", ""), "Found",
+                "Directory Listing", "Enabling this allows people to browse your web-filesystem"
+            ),
+            (
+                re.compile(r"[^a-z]location\s(?P<value>/doc).*", re.IGNORECASE), 
+                ("equal_to", ""), "Found",
+                "Docs alias", "Controls nginx doc aliasing"
+            ),
+            (
+                re.compile(r"[^a-z]autoindex\s(?P<value>/images).*", re.IGNORECASE), 
+                ("equal_to", ""), "Found",
+                "Images alias", "Controls nginx image aliasing"
             ),
         ),
     },
@@ -259,15 +278,19 @@ def check_value(regex, secure_value, display_value, message, additional, content
         if globals()[value_test](value, secure_value):
             colour = "green"
             value = value + " (secure)"
+            globals()['TOTAL_SECURE'] += 1
         else:
             colour = "red"
             value = value + " (not secure)"
+            globals()['TOTAL_UNSECURE'] += 1
     elif secure_value == "":
         colour = "green"
         value = "Not found (secure)"
+        globals()['TOTAL_SECURE'] += 1
     else:
         colour = "yellow"
         value = "unknown"
+        globals()['TOTAL_UNKNOWN'] += 1
     write_to_shell(message, additional, value, colour)
 
 def get_file_content(system):
@@ -316,6 +339,12 @@ for system in config_checks:
         globals()[system['check_function']](regex, secure_value, display_value, message, additional, content)
     sys.stdout.write("\n")
 
+
 sys.stdout.write("%s... Done%s" % (GREEN, RESET))
 sys.stdout.write("\n\n")
+sys.stdout.write("%sTotals:%s\n" % (BLUE, RESET))
+sys.stdout.write("%sSecure:   %s%s\n" % (GREEN, TOTAL_SECURE, RESET))
+sys.stdout.write("%sUnsecure: %s%s\n" % (RED, TOTAL_UNSECURE, RESET))
+sys.stdout.write("%sUnknown:  %s%s\n" % (YELLOW, TOTAL_UNKNOWN, RESET))
+sys.stdout.write("\n")
 sys.exit(os.EX_OK)
