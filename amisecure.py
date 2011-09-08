@@ -19,6 +19,7 @@ __version__ = "0.0.1 (Alpha)"
 __maintainer__ = "Kura"
 __email__ = "kura@deviling.net"
 __status__ = "Alpha/Test"
+__url__ = "https://github.com/kura/amisecure"
 
 TOTAL_SECURE = 0
 TOTAL_UNSECURE = 0
@@ -323,12 +324,15 @@ def get_shell_output(system):
     """Get content output from a shell command"""
     return os.popen(system['shell_command']).read()
 
+sys.stdout.write("%samisecure %s - %s%s" % (BLUE, __version__, __url__, RESET))
+sys.stdout.write("\n\n")
+sys.stdout.write("Please remember that this program helps show possible holes, it is just a basic tool.")
+sys.stdout.write("\n\n")
+
 if not is_root():
     sys.stdout.write("You need to be a superuser to run this program\n")
     sys.exit(os.EX_NOUSER)
 
-sys.stdout.write("%samisecure %s%s" % (BLUE, __version__, RESET))
-sys.stdout.write("\n\n")
 sys.stdout.write("%sScanning your system ...%s" % (GREEN, RESET))
 sys.stdout.write("\n\n")
 
@@ -342,7 +346,7 @@ for system in config_checks:
 
 sys.stdout.write("%s... Done%s" % (GREEN, RESET))
 sys.stdout.write("\n\n")
-sys.stdout.write("%sTotals:%s\n" % (BLUE, RESET))
+sys.stdout.write("%sTotals%s\n" % (PURPLE, RESET))
 sys.stdout.write("%sSecure:   %s%s\n" % (GREEN, TOTAL_SECURE, RESET))
 sys.stdout.write("%sUnsecure: %s%s\n" % (RED, TOTAL_UNSECURE, RESET))
 sys.stdout.write("%sUnknown:  %s%s\n" % (YELLOW, TOTAL_UNKNOWN, RESET))
