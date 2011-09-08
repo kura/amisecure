@@ -210,7 +210,7 @@ config_checks = (
             (
                 re.compile(r"denyhosts", re.IGNORECASE),
                 ("like", re.compile(r"denyhosts", re.IGNORECASE)), True,
-                "DenyHosts running", "When running it will help protect your server from SSH bruteforcing"
+                "DenyHosts running", "When running, DenyHosts will help protect your server from SSH bruteforcing"
             ),
         ),
     },
@@ -326,7 +326,7 @@ def get_shell_output(system):
 
 sys.stdout.write("%samisecure %s - %s%s" % (BLUE, __version__, __url__, RESET))
 sys.stdout.write("\n\n")
-sys.stdout.write("Please remember that this program helps show possible holes, it is just a basic tool.")
+sys.stdout.write("Please remember that this program helps show possible security holes, but it is just a basic tool.")
 sys.stdout.write("\n\n")
 
 if not is_root():
