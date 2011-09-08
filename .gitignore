@@ -1,3 +1,4 @@
 .pyc
 *~
 *.wpr
+tools/*
