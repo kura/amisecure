@@ -168,27 +168,27 @@ config_checks = (
         ),
         "tests": (
             (
-                re.compile(r"[^a-z]expose_php\s=\s(?P<value>on|off)", re.IGNORECASE), 
+                re.compile(r"[^a-z]expose_php\s?=\s?(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"), True,
                 "Expose PHP", "Controls PHP exposing itself via HTTP headers etc"
             ),
             (
-                re.compile(r"[^a-z]register_globals\s=\s(?P<value>on|off)", re.IGNORECASE), 
+                re.compile(r"[^a-z]register_globals\s?=\s?(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"), True,
                 "Register globals", "Controls whether GET, POST, etc variables are globally registered"
             ),
             (
-                re.compile(r"[^a-z]display_errors\s=\s(?P<value>on|off)", re.IGNORECASE), 
+                re.compile(r"[^a-z]display_errors\s?=\s?(?P<value>on|off)", re.IGNORECASE),
                 ("equal_to", "off"), True,
                 "Display errors", "Controls whether PHP prints errors"
             ),
             (
-                re.compile(r"[^a-z]session.use_only_cookies\s=\s(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^a-z]session.use_only_cookies\?s=\s?(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"), True,
                 "Use only cookies", "Prevents attacks involving passing session ids in URLs"
             ),
             (
-                re.compile(r"[^a-z]session.cookie_httponly\s=\s(?P<value>1|0)", re.IGNORECASE),
+                re.compile(r"[^a-z]session.cookie_httponly\s?=\s?(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "1"), True,
                 "HTTPOnly cookies", "Cookies set by the server can only be read by the client"
             ),
@@ -196,6 +196,11 @@ config_checks = (
                 re.compile(r"[^a-z]session.use_trans_sid\s=\s(?P<value>1|0)", re.IGNORECASE),
                 ("equal_to", "0"), True,
                 "Session trans SID", "Enables or disables URL-based session ids"
+            ),
+            (
+                re.compile(r"[^a-z]extension\s?=\s?(?P<value>suhosin.so)", re.IGNORECASE),
+                ("equal_to", "suhosin.so"), True,
+                "Suhosin", "PHP hardening - http://www.hardened-php.net/suhosin/"
             ),
         ),
     },
