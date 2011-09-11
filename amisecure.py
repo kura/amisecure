@@ -21,10 +21,6 @@ __email__ = "kura@deviling.net"
 __status__ = "Alpha/Test"
 __url__ = "https://github.com/kura/amisecure"
 
-TOTAL_SECURE = 0
-TOTAL_UNSECURE = 0
-TOTAL_UNKNOWN = 0
-
 config_checks = (
     {
         "name": "ssh",
@@ -222,138 +218,158 @@ config_checks = (
 )
 
 
-GREEN =  "\x1b[01;32m"
-RED = "\x1b[01;31m"
-YELLOW = "\x1b[01;33m"
-BLUE = "\x1b[01;34m"
-PURPLE = "\x1b[01;4;35m"
+START = "\x1b["
+GREEN =  "32m"
+RED = "31m"
+YELLOW = "33m"
+BLUE = "34m"
+PURPLE = "35m"
+BOLD = "01;"
+UNDERLINE = "04;"
 RESET = "\x1b[00m"
 
+SUCCESS = START+BOLD+GREEN
+FAILURE = START+BOLD+RED
+UNKNOWN = START+BOLD+YELLOW
+TITLE = START+BOLD+UNDERLINE+PURPLE
+MESSAGE = START+BOLD+BLUE
 
-def is_root():
-    """Check if user is super user"""
-    if os.geteuid() == 0:
-        return True
-    return False
 
-def like(this, regex):
-    """Check content against a regex"""
-    if regex.match(this):
-       return True
-    return False
+class AmISecure():
+    TOTAL_SECURE = 0
+    TOTAL_UNSECURE = 0
+    TOTAL_UNKNOWN = 0
+    content = ""
 
-def equal_to(this, that):
-    """Convert values to strings and check if they match"""
-    if isinstance(that, (tuple)):
-        for v in that:
-            if str(this).lower() == str(v).lower():
-                return True
-    if str(this).lower() == str(that).lower():
-        return True
-    return False
+    def __init__(self):
+        sys.stdout.write("%samisecure %s - %s%s" % (MESSAGE, __version__, __url__, RESET))
+        sys.stdout.write("\n\n")
+        self.is_root()
+        sys.stdout.write("Please remember that this program helps show possible security holes, but it is just a basic tool.")
+        sys.stdout.write("\n\n")
+        sys.stdout.write("%sScanning your system ...%s" % (SUCCESS, RESET))
+        sys.stdout.write("\n\n")
+        self.run()
+        sys.stdout.write("%s... Done%s" % (SUCCESS, RESET))
+        sys.stdout.write("\n\n")
+        self.totals()
+        sys.exit(os.EX_OK)
 
-def greater_than(this, that):
-    """Convert values to integers and check if the first is greater than the second"""
-    if int(this) > int(that):
-        return True
-    return False
-
-def less_than(this, that):
-    """Convert values to integers and check if the first is less than the second"""
-    if int(this) < int(that):
-        return True
-    return False
-
-def write_to_shell(message, additional, value, colour):
-    """Output response to shell"""
-    colour = globals()[colour.upper()]
-    sys.stdout.write("- %s ... " % (message,))
-    sys.stdout.write(colour + value.upper() + RESET)
-    sys.stdout.write("\n")
-    if additional:
-        sys.stdout.write("  %s%s%s"% (BLUE, additional, RESET))
+    def is_root(self):
+        """Check if user is super user"""
+        if os.geteuid() == 0:
+            return True
+        sys.stdout.write("You need to be a superuser to run this program\n")
+        sys.exit(os.EX_NOUSER)
+        
+    def run(self):
+        """Go go go"""
+        for system in config_checks:
+            sys.stdout.write("%sChecking: %s%s\n" % (TITLE, system['name'], RESET))
+            self.content = getattr(self, system['content_function'])(system)
+            for (regex, secure_value, display_value, message, additional) in system['tests']:
+                getattr(self, system['check_function'])(regex, secure_value, display_value, message, additional)
+            sys.stdout.write("\n")
+            
+    def totals(self):
+        sys.stdout.write("%sTotals%s\n" % (TITLE, RESET))
+        sys.stdout.write("%sSecure:   %s%s\n" % (SUCCESS, self.TOTAL_SECURE, RESET))
+        sys.stdout.write("%sUnsecure: %s%s\n" % (FAILURE, self.TOTAL_UNSECURE, RESET))
+        sys.stdout.write("%sUnknown:  %s%s\n" % (UNKNOWN, self.TOTAL_UNKNOWN, RESET))
         sys.stdout.write("\n")
 
-def check_value(regex, secure_value, display_value, message, additional, content):
-    """Test method for doing entire check without code replication"""
-    (value_test, secure_value) = secure_value
-    if regex.search(content):
-        value = regex.findall(content)[-1]
-        if display_value is not True:
-            value = display_value
-        if globals()[value_test](value, secure_value):
-            colour = "green"
-            value = value + " (secure)"
-            globals()['TOTAL_SECURE'] += 1
+    def like(self, this, regex):
+        """Check content against a regex"""
+        if regex.match(this):
+            return True
+        return False
+    
+    def equal_to(self, this, that):
+        """Convert values to strings and check if they match"""
+        if isinstance(that, (tuple)):
+            for v in that:
+                if str(this).lower() == str(v).lower():
+                    return True
+        if str(this).lower() == str(that).lower():
+            return True
+        return False
+    
+    def greater_than(self, this, that):
+        """Convert values to integers and check if the first is greater than the second"""
+        if int(this) > int(that):
+            return True
+        return False
+    
+    def less_than(self, this, that):
+        """Convert values to integers and check if the first is less than the second"""
+        if int(this) < int(that):
+            return True
+        return False
+    
+    def write_to_shell(self, message, additional, value, colour):
+        """Output response to shell"""
+        sys.stdout.write("- %s ... " % (message,))
+        sys.stdout.write(colour + value.upper() + RESET)
+        sys.stdout.write("\n")
+        sys.stdout.write("  %s%s%s"% (MESSAGE, additional, RESET))
+        sys.stdout.write("\n")
+    
+    def check_value(self, regex, secure_value, display_value, message, additional):
+        """Test method for doing entire check without code replication"""
+        (value_test, secure_value) = secure_value
+        if regex.search(self.content):
+            value = regex.findall(self.content)[-1]
+            if display_value is not True:
+                value = display_value
+            if getattr(self, value_test)(value, secure_value):
+                colour = SUCCESS
+                value = value + " (secure)"
+                self.TOTAL_SECURE += 1
+            else:
+                colour = FAILURE
+                value = value + " (not secure)"
+                self.TOTAL_UNSECURE += 1
+        elif secure_value == "":
+            colour = SUCCESS
+            value = "Not found (secure)"
+            self.TOTAL_SECURE += 1
         else:
-            colour = "red"
-            value = value + " (not secure)"
-            globals()['TOTAL_UNSECURE'] += 1
-    elif secure_value == "":
-        colour = "green"
-        value = "Not found (secure)"
-        globals()['TOTAL_SECURE'] += 1
-    else:
-        colour = "yellow"
-        value = "unknown"
-        globals()['TOTAL_UNKNOWN'] += 1
-    write_to_shell(message, additional, value, colour)
-
-def get_file_content(system):
-    """Open up all listed config files and cat their content together"""
-    content = ""
-    for file in system['files']:
-        if re.search(r"\*$", file):
-            (path, asterix) = os.path.split(file)
-            if os.path.exists(path):
-                for extra_file in os.listdir(path):
-                    file_path = os.path.join(path, extra_file)
-                    if os.path.exists(file_path):
-                        content += "\n" + open(file_path, "r").read()
-        elif os.path.exists(file):
-            content = content + "\n" + open(file, "r").read()
-    return clean(content)
-
-def clean(content):
-    """Clean up the file contents, remove extra spaces and commented lines"""
-    stripped_content = ""
-    for line in content.split("\n"):
-        line = line.lstrip()
-        line = re.sub(r"\s+", " ", line)
-        if not re.match(r"[^a-z]#", line) and not re.match(r"#", line) \
-        and not re.match(r"[^a-z];", line) and not re.match(r";", line):
-            stripped_content += line + "\n"
-    return stripped_content
-
-def get_shell_output(system):
-    """Get content output from a shell command"""
-    return os.popen(system['shell_command']).read()
-
-sys.stdout.write("%samisecure %s - %s%s" % (BLUE, __version__, __url__, RESET))
-sys.stdout.write("\n\n")
-sys.stdout.write("Please remember that this program helps show possible security holes, but it is just a basic tool.")
-sys.stdout.write("\n\n")
-
-if not is_root():
-    sys.stdout.write("You need to be a superuser to run this program\n")
-    sys.exit(os.EX_NOUSER)
-
-sys.stdout.write("%sScanning your system ...%s" % (GREEN, RESET))
-sys.stdout.write("\n\n")
-
-for system in config_checks:
-    sys.stdout.write("%sChecking: %s%s\n" % (PURPLE, system['name'], RESET))
-    content = globals()[system['content_function']](system)
-    for (regex, secure_value, display_value, message, additional) in system['tests']:
-        globals()[system['check_function']](regex, secure_value, display_value, message, additional, content)
-    sys.stdout.write("\n")
+            colour = UNKNOWN
+            value = "unknown"
+            self.TOTAL_UNKNOWN += 1
+        self.write_to_shell(message, additional, value, colour)
+    
+    def get_file_content(self, system):
+        """Open up all listed config files and cat their content together"""
+        content = ""
+        for file in system['files']:
+            if re.search(r"\*$", file):
+                (path, asterix) = os.path.split(file)
+                if os.path.exists(path):
+                    for extra_file in os.listdir(path):
+                        file_path = os.path.join(path, extra_file)
+                        if os.path.exists(file_path):
+                            content += "\n" + open(file_path, "r").read()
+            elif os.path.exists(file):
+                content = content + "\n" + open(file, "r").read()
+        return self.clean(content)
+    
+    def clean(self, content):
+        """Clean up the file contents, remove extra spaces and commented lines"""
+        stripped_content = ""
+        for line in content.split("\n"):
+            line = line.lstrip()
+            line = re.sub(r"\s+", " ", line)
+            if not re.match(r"[^a-z]#", line) and not re.match(r"#", line) \
+            and not re.match(r"[^a-z];", line) and not re.match(r";", line):
+                stripped_content += line + "\n"
+        return stripped_content
+    
+    def get_shell_output(self, system):
+        """Get content output from a shell command"""
+        return os.popen(system['shell_command']).read()
 
 
-sys.stdout.write("%s... Done%s" % (GREEN, RESET))
-sys.stdout.write("\n\n")
-sys.stdout.write("%sTotals%s\n" % (PURPLE, RESET))
-sys.stdout.write("%sSecure:   %s%s\n" % (GREEN, TOTAL_SECURE, RESET))
-sys.stdout.write("%sUnsecure: %s%s\n" % (RED, TOTAL_UNSECURE, RESET))
-sys.stdout.write("%sUnknown:  %s%s\n" % (YELLOW, TOTAL_UNKNOWN, RESET))
-sys.stdout.write("\n")
-sys.exit(os.EX_OK)
+if __name__ == "__main__":
+    obj = AmISecure()
+    obj.run()
