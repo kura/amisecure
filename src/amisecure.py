@@ -484,6 +484,7 @@ class AmISecure():
             colour = UNKNOWN
             display_value = "unknown"
             self.TOTAL_UNKNOWN += 1
+        # override
         if self.test['display_value'] is not True:
             if success is True:
                 display_value = "%s (secure)" % self.test['display_text']['success']
