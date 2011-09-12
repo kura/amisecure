@@ -122,7 +122,7 @@ config_checks = (
                 'additional_text': "Always disable unless required"
             },
             {
-                'regex': re.compile(r"[^a-z]SSLCipherSuite\s[a-z0-9\:\!\+]*?(?P<value>\+?[^\-\!]?SSLv2)[a-z0-9\:\!\+]*?", re.IGNORECASE), #ssl
+                'regex': re.compile(r"[^a-z]SSLCipherSuite\s[a-z0-9\:\!\+]*?(?P<value>\+?[^\-\!]?SSLv2)[a-z0-9\:\!\+]*?", re.IGNORECASE), #ssl2
                 'method': "equal_to",
                 'secure_values': ("", "!SSLv2"),
                 'display_value': False,
@@ -132,7 +132,7 @@ config_checks = (
                 'additional_text': "Always disable, SSLv2 is not secure"
             },
             {
-                'regex': re.compile(r"[^a-z]SSLProtocol\s[a-z0-9\s]*?(?P<value>\+?[^\-\!]?SSLv2)[a-z0-9\s]*?", re.IGNORECASE),  #ssl
+                'regex': re.compile(r"[^a-z]SSLProtocol\s[a-z0-9\s]*?(?P<value>\+?[^\-\!]?SSLv2)[a-z0-9\s]*?", re.IGNORECASE),  #ssl2
                 'method': "equal_to",
                 'secure_values': ("", "!SSLv2"),
                 'display_value': False,
