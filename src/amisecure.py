@@ -142,7 +142,7 @@ config_checks = (
                 'additional_text': "Always disable, SSLv2 is not secure"
             },
             {
-                'regex': re.compile(r"[^a-z]Options\s.*?(?P<value>\+?[^\-]?Includes).*", re.IGNORECASE), 
+                'regex': re.compile(r"[^a-z]Options\s.*?[^\-Includes].*?(?P<value>\+?Includes).*", re.IGNORECASE), 
                 'method': "equal_to",
                 'secure_values': ("", "-Includes"),
                 'display_value': False,
@@ -152,7 +152,7 @@ config_checks = (
                 'additional_text': "Only enable when required"
             },
             {
-                'regex': re.compile(r"[^a-z]Options\s.*?(?P<value>\+?[^\-]?ExecCGI).*", re.IGNORECASE),
+                'regex': re.compile(r"[^a-z]Options\s.*?[^\-ExecCGI].*?(?P<value>\+?ExecCGI).*", re.IGNORECASE),
                 'method': "equal_to",
                 'secure_values': ("", "-ExecCGI"),
                 'display_value': False,
@@ -162,7 +162,7 @@ config_checks = (
                 'additional_text': "Only enable when if you're using CGI"
             },
             {
-                'regex': re.compile(r"[^a-z]Options\s.*?(?P<value>\+?[^\-]?Indexes).*", re.IGNORECASE), 
+                'regex': re.compile(r"[^a-z]Options\s.*?[^\-Indexes].*?(?P<value>\+?Indexes).*", re.IGNORECASE), 
                 'method': "equal_to",
                 'secure_values': ("", "-Indexes"),
                 'display_value': False,
