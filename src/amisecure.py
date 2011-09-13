@@ -382,7 +382,6 @@ class AmISecure():
         sys.stdout.write("%s... Done%s" % (SUCCESS, RESET))
         sys.stdout.write("\n\n")
         self.totals()
-        sys.exit(os.EX_OK)
 
     def is_root(self):
         """Check if user is super user"""
@@ -405,8 +404,10 @@ class AmISecure():
             sys.stdout.write("\n")
             
     def totals(self):
+        """Grab totals and output them"""
+        all = (self.TOTAL_SECURE+self.TOTAL_UNSECURE+self.TOTAL_UNKNOWN)
         sys.stdout.write("%sResults%s\n" % (TITLE, RESET))
-        sys.stdout.write("%sScanned:  %s%s\n" % (MESSAGE, (self.TOTAL_SECURE+self.TOTAL_UNSECURE+self.TOTAL_UNKNOWN), RESET))
+        sys.stdout.write("%sScanned:  %s%s\n" % (MESSAGE, all, RESET))
         sys.stdout.write("%sSecure:   %s%s\n" % (SUCCESS, self.TOTAL_SECURE, RESET))
         sys.stdout.write("%sUnsecure: %s%s\n" % (FAILURE, self.TOTAL_UNSECURE, RESET))
         sys.stdout.write("%sUnknown:  %s%s\n" % (UNKNOWN, self.TOTAL_UNKNOWN, RESET))
@@ -435,14 +436,22 @@ class AmISecure():
     
     def greater_than(self, this, that):
         """Convert values to integers and check if the first is greater than the second"""
-        if int(this) > int(that):
-            return True
+        if isinstance(that, (tuple)):
+            if int(this) > [int(x) for x in that]:
+                return True
+        if isinstance(that, (int)):
+            if int(this) > int(that):
+                return True
         return False
     
     def less_than(self, this, that):
         """Convert values to integers and check if the first is less than the second"""
-        if int(this) < int(that):
-            return True
+        if isinstance(that, (tuple)):
+            if int(this) < [int(x) for x in that]:
+                return True:
+        if isinstance(that, (int)):
+            if int(this) < int(that):
+                return True
         return False
     
     def write_to_shell(self, value, colour):
@@ -454,7 +463,7 @@ class AmISecure():
         sys.stdout.write("\n")
     
     def check_value(self):
-        """Test method for doing entire check without code replication"""
+        """Value testing method"""
         secure_on_empty_set = True
         try:
             a = self.test['secure_on_empty']
@@ -511,7 +520,7 @@ class AmISecure():
                             content += "\n" + open(file_path, "r").read()
             elif os.path.exists(file):
                 self.installed = True
-                content = content + "\n" + open(file, "r").read()
+                content += "\n" + open(file, "r").read()
         return self.clean(content)
     
     def clean(self, content):
@@ -533,3 +542,4 @@ class AmISecure():
 if __name__ == "__main__":
     obj = AmISecure()
     obj.run()
+    sys.exit(os.EX_OK)
