@@ -315,7 +315,7 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("suhosin.so"),
                 'display_value': False,
-                'display_text': {'success': "Not Found", 'failure': "Found"},
+                'display_text': {'success': "Found", 'failure': "Not Found"},
                 'secure_on_empty': False,
                 'test_name': "Suhosin",
                 'additional_text': "PHP hardening - http://www.hardened-php.net/suhosin/"
@@ -343,6 +343,8 @@ config_checks = (
         ),
     },
 )
+
+dont_exclude = ('denyhosts',)
 
 
 START = "\x1b["
@@ -394,9 +396,12 @@ class AmISecure():
         for system in config_checks:
             sys.stdout.write("%sChecking: %s%s\n" % (TITLE, system['name'], RESET))
             self.content = getattr(self, system['content_function'])(system)
-            for test in system['tests']:
-                self.test = test
-                getattr(self, system['check_function'])()
+            if self.installed is False and system['name'] not in dont_exclude:
+                sys.stdout.write("%sNot installed. Skipping%s\n" % (MESSAGE, RESET))
+            else:
+                for test in system['tests']:
+                    self.test = test
+                    getattr(self, system['check_function'])()
             sys.stdout.write("\n")
             
     def totals(self):
@@ -420,7 +425,6 @@ class AmISecure():
     
     def equal_to(self, this, that):
         """Convert values to strings and check if they match"""
-        print this, that
         if isinstance(that, (tuple)):
             if this.lower() in [x.lower() for x in that]:
                 return True
@@ -495,6 +499,7 @@ class AmISecure():
     def get_file_content(self, system):
         """Open up all listed config files and cat their content together"""
         content = ""
+        self.installed = False
         for file in system['files']:
             if re.search(r"\*$", file):
                 (path, asterix) = os.path.split(file)
@@ -502,8 +507,10 @@ class AmISecure():
                     for extra_file in os.listdir(path):
                         file_path = os.path.join(path, extra_file)
                         if os.path.exists(file_path):
+                            self.installed = True
                             content += "\n" + open(file_path, "r").read()
             elif os.path.exists(file):
+                self.installed = True
                 content = content + "\n" + open(file, "r").read()
         return self.clean(content)
     

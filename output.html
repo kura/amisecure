@@ -2,13 +2,16 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-<title>amisecure</title>
+<title>out</title>
 <style type="text/css">
 body {background-color:#000; color: #fff;}
 </style>
+
 </head>
 <body>
-<pre style="font-family:Courier New;font-size:10pt;"><span style="font-weight:bold;color:#609fcf;">amisecure 0.0.1 (Alpha)</span>
+<pre style="font-family:Courier New;font-size:10pt;"><span style="font-weight:bold;color:#609fcf;">amisecure 0.0.1 (Alpha) - https://github.com/kura/amisecure</span>
+
+Please remember that this program helps show possible security holes, but it is just a basic tool.
 
 <span style="font-weight:bold;color:#5cd734;">Scanning your system ...</span>
 
@@ -24,15 +27,19 @@ body {background-color:#000; color: #fff;}
 
 <span style="font-weight:bold;text-decoration:underline;color:#7e7ea8;">Checking: apache2</span>
 - Timeout ... <span style="font-weight:bold;color:#5cd734;">5 (SECURE)</span>
-  <span style="font-weight:bold;color:#609fcf;">Less than 5 seconds is good</span>
+  <span style="font-weight:bold;color:#609fcf;">5 seconds or less is good</span>
 - Keep alive timeout ... <span style="font-weight:bold;color:#5cd734;">3 (SECURE)</span>
-  <span style="font-weight:bold;color:#609fcf;">Less than 3 seconds is good</span>
+  <span style="font-weight:bold;color:#609fcf;">3 seconds or less is good</span>
 - Server tokens ... <span style="font-weight:bold;color:#5cd734;">PROD (SECURE)</span>
   <span style="font-weight:bold;color:#609fcf;">Prod and Major are considered 'secure' but both are the same</span>
 - Server signature ... <span style="font-weight:bold;color:#5cd734;">OFF (SECURE)</span>
   <span style="font-weight:bold;color:#609fcf;">Off is considered 'secure'</span>
 - Trace Enable ... <span style="font-weight:bold;color:#5cd734;">OFF (SECURE)</span>
   <span style="font-weight:bold;color:#609fcf;">Always disable unless required</span>
+- SSLv2 cipher ... <span style="font-weight:bold;color:#5cd734;">NOT FOUND (SECURE)</span>
+  <span style="font-weight:bold;color:#609fcf;">Always disable, SSLv2 is not secure</span>
+- SSLv2 protocol ... <span style="font-weight:bold;color:#5cd734;">NOT FOUND (SECURE)</span>
+  <span style="font-weight:bold;color:#609fcf;">Always disable, SSLv2 is not secure</span>
 - ServerSide includes ... <span style="font-weight:bold;color:#5cd734;">NOT FOUND (SECURE)</span>
   <span style="font-weight:bold;color:#609fcf;">Only enable when required</span>
 - CGI execution ... <span style="font-weight:bold;color:#5cd734;">NOT FOUND (SECURE)</span>
@@ -48,7 +55,7 @@ body {background-color:#000; color: #fff;}
 
 <span style="font-weight:bold;text-decoration:underline;color:#7e7ea8;">Checking: nginx</span>
 - Server tokens ... <span style="font-weight:bold;color:#5cd734;">OFF (SECURE)</span>
-  <span style="font-weight:bold;color:#609fcf;">Hides or shows nginx version information</span>
+  <span style="font-weight:bold;color:#609fcf;">Display nginx version information</span>
 - Directory Listing ... <span style="font-weight:bold;color:#5cd734;">NOT FOUND (SECURE)</span>
   <span style="font-weight:bold;color:#609fcf;">Enabling this allows people to browse your web-filesystem</span>
 - Docs alias ... <span style="font-weight:bold;color:#5cd734;">NOT FOUND (SECURE)</span>
@@ -69,15 +76,18 @@ body {background-color:#000; color: #fff;}
   <span style="font-weight:bold;color:#609fcf;">Cookies set by the server can only be read by the client</span>
 - Session trans SID ... <span style="font-weight:bold;color:#5cd734;">0 (SECURE)</span>
   <span style="font-weight:bold;color:#609fcf;">Enables or disables URL-based session ids</span>
+- Suhosin ... <span style="font-weight:bold;color:#5cd734;">FOUND (SECURE)</span>
+  <span style="font-weight:bold;color:#609fcf;">PHP hardening - http://www.hardened-php.net/suhosin/</span>
 
 <span style="font-weight:bold;text-decoration:underline;color:#7e7ea8;">Checking: denyhosts</span>
 - DenyHosts running ... <span style="font-weight:bold;color:#5cd734;">DENYHOSTS (SECURE)</span>
-  <span style="font-weight:bold;color:#609fcf;">When running it will help protect your server from SSH bruteforcing</span>
+  <span style="font-weight:bold;color:#609fcf;">When running, DenyHosts will help protect your server from SSH bruteforcing</span>
 
 <span style="font-weight:bold;color:#5cd734;">... Done</span>
 
-<span style="font-weight:bold;color:#609fcf;">Totals:</span>
-<span style="font-weight:bold;color:#5cd734;">Secure:   25</span>
+<span style="font-weight:bold;text-decoration:underline;color:#7e7ea8;">Results</span>
+<span style="font-weight:bold;color:#609fcf;">Scanned:  29</span>
+<span style="font-weight:bold;color:#5cd734;">Secure:   28</span>
 <span style="font-weight:bold;color:#d41708;">Unsecure: 1</span>
 <span style="font-weight:bold;color:#d4e94f;">Unknown:  0</span>
 
