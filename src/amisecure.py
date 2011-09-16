@@ -448,7 +448,7 @@ class AmISecure():
         """Convert values to integers and check if the first is less than the second"""
         if isinstance(that, (tuple)):
             if int(this) < [int(x) for x in that]:
-                return True:
+                return True
         if isinstance(that, (int)):
             if int(this) < int(that):
                 return True
