@@ -291,6 +291,7 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("1"),
                 'display_value': True,
+                'secure_on_empty': False,
                 'test_name': "Use only cookies",
                 'additional_text': "Prevents attacks involving passing session ids in URLs"
             },
@@ -298,6 +299,7 @@ config_checks = (
                 'regex': re.compile(r"[^a-z]session\.cookie_httponly\s?=\s?(?P<value>1|0)", re.IGNORECASE),
                 'method': "equal_to",
                 'secure_values': ("1"),
+                'secure_on_empty': False,
                 'display_value': True,
                 'test_name': "HTTPOnly cookies",
                 'additional_text': "Cookies set by the server can only be read by the client"
@@ -308,6 +310,7 @@ config_checks = (
                 'secure_values': ("0"),
                 'display_value': True,
                 'test_name': "Session trans SID",
+                'secure_on_empty': False,
                 'additional_text': "Enables or disables URL-based session ids"
             },
             {
