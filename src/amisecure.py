@@ -372,16 +372,19 @@ class AmISecure():
     TOTAL_UNSECURE = 0
     TOTAL_UNKNOWN = 0
     content = ""
-
+    
     def __init__(self):
+        self.is_root()
+        
+    def write_header(self):
         sys.stdout.write("%samisecure %s - %s%s" % (MESSAGE, __version__, __url__, RESET))
         sys.stdout.write("\n\n")
-        self.is_root()
         sys.stdout.write("Please remember that this program helps show possible security holes, but it is just a basic tool.")
         sys.stdout.write("\n\n")
         sys.stdout.write("%sScanning your system ...%s" % (SUCCESS, RESET))
         sys.stdout.write("\n\n")
-        self.run()
+        
+    def write_footer(self):
         sys.stdout.write("%s... Done%s" % (SUCCESS, RESET))
         sys.stdout.write("\n\n")
         self.totals()
@@ -395,6 +398,7 @@ class AmISecure():
         
     def run(self):
         """Go go go"""
+        self.write_header()
         for system in config_checks:
             sys.stdout.write("%sChecking: %s%s\n" % (TITLE, system['name'], RESET))
             self.content = getattr(self, system['content_function'])(system)
@@ -405,6 +409,8 @@ class AmISecure():
                     self.test = test
                     getattr(self, system['check_function'])()
             sys.stdout.write("\n")
+        self.write_footer()
+        return
             
     def totals(self):
         """Grab totals and output them"""
