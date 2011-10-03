@@ -338,7 +338,7 @@ config_checks = (
                 'regex': re.compile(r"denyhosts", re.IGNORECASE),
                 'method': "like",
                 'secure_values': (re.compile(r"denyhosts", re.IGNORECASE)),
-                'display_value': True,
+                'display_value': False,
                 'display_text': {'success': "Found", 'failure': "Not Found"},
                 'secure_on_empty': False,
                 'test_name': "DenyHosts running",
