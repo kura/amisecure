@@ -302,6 +302,7 @@ config_checks = (
                 'secure_on_empty': False,
                 'display_value': True,
                 'test_name': "HTTPOnly cookies",
+                'display_text': {'success': "Not Found", 'failure': "Found"},
                 'additional_text': "Cookies set by the server can only be read by the client"
             },
             {
