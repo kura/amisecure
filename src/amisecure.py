@@ -25,6 +25,17 @@ TOTAL_SECURE = 0
 TOTAL_UNSECURE = 0
 TOTAL_UNKNOWN = 0
 
+TEMPLATE_TEST = (
+    'regex',
+    'method',
+    'secure_values',
+    'display_value',
+    'test_name',
+    'additional_text',
+    'display_text',
+    'secure_on_empty',
+)
+
 config_checks = (
     {
         "name": "ssh",
@@ -39,22 +50,27 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("no"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Permit root logins",
-                'additional_text': "Always disable this option"
+                'additional_text': "Always disable this option",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]UsePrivilegeSeparation\s(?P<value>yes|no)", re.IGNORECASE),
                 'method': "equal_to",
                 'secure_values': ("yes"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Use privilege separation",
-                'additional_text': "Always enable this option"
+                'additional_text': "Always enable this option",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]StrictModes\s(?P<value>yes|no)", re.IGNORECASE),
                 'method': "equal_to",
                 'secure_values': ("yes"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Use strict modes",
                 'additional_text': "Always enable this option"
             },
@@ -63,8 +79,10 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("no"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Permit empty passwords",
-                'additional_text': "Always disable this option"
+                'additional_text': "Always disable this option",
+                'secure_on_empty': False,
             },
         ),
     },
@@ -86,40 +104,50 @@ config_checks = (
                 'method': "less_than",
                 'secure_values': (6),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Timeout",
-                'additional_text': "5 seconds or less is good"
+                'additional_text': "5 seconds or less is good",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]KeepAliveTimeout\s(?P<value>[0-9]*)", re.IGNORECASE), 
                 'method': "less_than",
                 'secure_values': (4),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Keep alive timeout",
-                'additional_text': "3 seconds or less is good"
+                'additional_text': "3 seconds or less is good",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]ServerTokens\s(?P<value>Prod|Major|Minor|Minimal|OS|Full)", re.IGNORECASE), 
                 'method': "equal_to",
                 'secure_values': ("prod", "major"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Server tokens",
-                'additional_text': "Prod and Major are considered 'secure' but both are the same"
+                'additional_text': "Prod and Major are considered 'secure' but both are the same",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]ServerSignature\s(?P<value>on|off)", re.IGNORECASE), 
                 'method': "equal_to",
                 'secure_values': ("off"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Server signature",
-                'additional_text': "Off is considered 'secure'"
+                'additional_text': "Off is considered 'secure'",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]traceenable\s(?P<value>on|off)", re.IGNORECASE), 
                 'method': "equal_to",
                 'secure_values': ("off"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Trace Enable",
-                'additional_text': "Always disable unless required"
+                'additional_text': "Always disable unless required",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]SSLCipherSuite\s[a-z0-9\:\!\+]*?(?P<value>\+?[^\-\!]?SSLv2)[a-z0-9\:\!\+]*?", re.IGNORECASE), #ssl2
@@ -218,8 +246,10 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("off"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Server tokens",
-                'additional_text': "Display nginx version information"
+                'additional_text': "Display nginx version information",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]autoindex\s(?P<value>on|off)", re.IGNORECASE), 
@@ -267,30 +297,37 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("off"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Expose PHP",
-                'additional_text': "Controls PHP exposing itself via HTTP headers etc"
+                'additional_text': "Controls PHP exposing itself via HTTP headers etc",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]register_globals\s?=\s?(?P<value>on|off)", re.IGNORECASE),
                 'method': "equal_to",
                 'secure_values': ("off"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Register globals",
-                'additional_text': "Controls whether GET, POST, etc variables are globally registered"
+                'additional_text': "Controls whether GET, POST, etc variables are globally registered",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]display_errors\s?=\s?(?P<value>on|off)", re.IGNORECASE), 
                 'method': "equal_to",
                 'secure_values': ("off"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Display errors",
-                'additional_text': "Controls whether PHP prints errors"
+                'additional_text': "Controls whether PHP prints errors",
+                'secure_on_empty': False,
             },
             {
                 'regex': re.compile(r"[^a-z]session\.use_only_cookies\s?=\s?(?P<value>1|0)", re.IGNORECASE),
                 'method': "equal_to",
                 'secure_values': ("1"),
                 'display_value': True,
+                'display_text': False,
                 'secure_on_empty': False,
                 'test_name': "Use only cookies",
                 'additional_text': "Prevents attacks involving passing session ids in URLs"
@@ -310,6 +347,7 @@ config_checks = (
                 'method': "equal_to",
                 'secure_values': ("0"),
                 'display_value': True,
+                'display_text': False,
                 'test_name': "Session trans SID",
                 'secure_on_empty': False,
                 'additional_text': "Enables or disables URL-based session ids"
@@ -407,11 +445,18 @@ class AmISecure():
                 sys.stdout.write("%sNot installed. Skipping%s\n" % (MESSAGE, RESET))
             else:
                 for test in system['tests']:
-                    self.test = test
-                    getattr(self, system['check_function'])()
+                    if self.test_properly_configured(test):
+                        self.test = test
+                        getattr(self, system['check_function'])()
             sys.stdout.write("\n")
         self.write_footer()
         return
+    
+    def test_properly_configured(self, test):
+        for key in TEMPLATE_TEST:
+            if key not in test.keys():
+                return False
+        return True
             
     def totals(self):
         """Grab totals and output them"""
@@ -474,35 +519,35 @@ class AmISecure():
     
     def check_value(self):
         """Value testing method"""
-        secure_on_empty_set = True
-        try:
-            a = self.test['secure_on_empty']
-        except KeyError:
-            secure_on_empty_set = False
         
+        success = False
         if self.test['regex'].search(self.content):
             value = self.test['regex'].findall(self.content)[-1]
+            tested = False
             if getattr(self, self.test['method'])(value, self.test['secure_values']):
                 success = True
                 colour = SUCCESS
                 display_value = value + " (secure)"
                 self.TOTAL_SECURE += 1
+                tested = True
             else:
                 success = False
                 colour = FAILURE
                 display_value = value + " (not secure)"
                 self.TOTAL_UNSECURE += 1
-        elif secure_on_empty_set is True:
-            if self.test['secure_on_empty'] is True:
+                tested = True
+            if self.test['secure_on_empty'] is True and tested is False:
                 success = True
                 colour = SUCCESS
                 display_value = self.test['display_text']['success']
                 self.TOTAL_SECURE += 1
-            elif self.test['secure_on_empty'] is False:
+                tested = True
+            elif self.test['secure_on_empty'] is False and tested is False:
                 success = False
                 colour = FAILURE
                 display_value = "%s (not secure)" % self.test['display_text']['failure']
                 self.TOTAL_UNSECURE += 1
+                tested = True
         else:
             colour = UNKNOWN
             display_value = "unknown"
