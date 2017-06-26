@@ -17,7 +17,7 @@ __credits__ = ["Kura"]
 __license__ = "Free"
 __version__ = "0.0.2 (Alpha)"
 __maintainer__ = "Kura"
-__email__ = "kura@deviling.net"
+__email__ = "kura@kura.io"
 __status__ = "Alpha/Test"
 __url__ = "https://github.com/kura/amisecure"
 
